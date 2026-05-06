@@ -169,6 +169,7 @@ test("cloud client composes video routes correctly", async () => {
     fileSize: 12345,
     maxDurationSeconds: 600,
     requireSignedUrls: true,
+    tags: ["marketing", "launch"],
   });
   assert.equal(calls[2].url, "https://api.voyantjs.com/video/v1/videos/upload");
   assert.equal(calls[2].method, "POST");
@@ -177,6 +178,7 @@ test("cloud client composes video routes correctly", async () => {
     fileSize: 12345,
     maxDurationSeconds: 600,
     requireSignedUrls: true,
+    tags: ["marketing", "launch"],
   });
 
   await client.video.videos.createFromUrl({

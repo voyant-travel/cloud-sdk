@@ -486,6 +486,7 @@ export interface VideoSummary {
   playbackDashUrl: string | null;
   requireSignedUrls: boolean;
   allowedOrigins: string[];
+  tags: string[];
   maxDurationSeconds: number | null;
   maxSizeBytes: number | null;
   watermarkProfileId: string | null;
@@ -551,6 +552,8 @@ export interface CreateVideoUploadInput {
   name?: string | null;
   requireSignedUrls?: boolean;
   allowedOrigins?: string[];
+  /** Free-form labels. Max 50 tags, each up to 64 characters. */
+  tags?: string[];
   watermarkProfileId?: string | null;
   thumbnailTimestampPct?: number | null;
   meta?: Record<string, string>;
@@ -561,6 +564,8 @@ export interface CreateVideoFromUrlInput {
   name?: string | null;
   requireSignedUrls?: boolean;
   allowedOrigins?: string[];
+  /** Free-form labels. Max 50 tags, each up to 64 characters. */
+  tags?: string[];
   watermarkProfileId?: string | null;
   thumbnailTimestampPct?: number | null;
   meta?: Record<string, string>;
@@ -571,6 +576,8 @@ export interface UpdateVideoInput {
   thumbnailTimestampPct?: number;
   requireSignedUrls?: boolean;
   allowedOrigins?: string[];
+  /** Replaces the existing tag set. Max 50 tags, each up to 64 characters. */
+  tags?: string[];
   meta?: Record<string, string>;
 }
 
