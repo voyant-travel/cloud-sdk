@@ -1,5 +1,26 @@
 # @voyantjs/cloud-sdk
 
+## 0.7.0
+
+### Minor Changes
+
+- b08914e: Add `tags` support to the video API. `VideoSummary` now includes a `tags:
+string[]` field, and `CreateVideoUploadInput`, `CreateVideoFromUrlInput`, and
+  `UpdateVideoInput` accept an optional `tags` array (max 50 tags, each up to 64
+  characters). On update, the supplied array replaces the existing tag set.
+- 45fef9e: `videos.createUpload` now requires `fileSize` (bytes). The upload-ticket
+  endpoint switched to Cloudflare Stream's TUS protocol, so the server needs the
+  file length up front for the `Upload-Length` header. `ticket.uploadUrl` is now a
+  one-time TUS endpoint (use `tus-js-client` or another TUS client) rather than a
+  multipart POST URL.
+
+### Patch Changes
+
+- 309a140: Fix README and docs snippets so `verify:readmes` typechecks. The TUS-migration
+  example referenced `file.size` without declaring `file`, which caused CI to
+  fail on push to main. Snippets now declare `file` and surface the new `tags`
+  field.
+
 ## 0.6.2
 
 ### Patch Changes
