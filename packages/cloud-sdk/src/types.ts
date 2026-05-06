@@ -285,7 +285,13 @@ export interface BrowserRenderInput {
   allowRequestPattern?: string[];
   bestAttempt?: boolean;
   emulateMediaType?: "screen" | "print";
-  goToOptions?: BrowserGoToOptions;
+  /**
+   * Page navigation options forwarded to Cloudflare Browser Rendering.
+   * Field name is `gotoOptions` (all-lowercase past the verb) to
+   * match CF's API schema — anything else (e.g. `goToOptions`) is
+   * rejected with `unrecognized_keys`.
+   */
+  gotoOptions?: BrowserGoToOptions;
   waitForSelector?: BrowserWaitForSelector;
   waitForTimeout?: number;
   [key: string]: unknown;
@@ -538,6 +544,8 @@ export interface VideoSignedToken {
 }
 
 export interface CreateVideoUploadInput {
+  /** Total file size in bytes. Used as the TUS `Upload-Length`. Max 30 GB. */
+  fileSize: number;
   /** Cloudflare Stream caps total length at 21,600 seconds (6 hours). */
   maxDurationSeconds: number;
   name?: string | null;

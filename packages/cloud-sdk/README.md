@@ -186,9 +186,11 @@ const client = createVoyantCloudClient({
 
 const ticket = await client.video.videos.createUpload({
   name: "intro",
+  fileSize: file.size,
   maxDurationSeconds: 600,
 });
-// upload the file to ticket.uploadUrl with a PUT/POST as Cloudflare Stream expects
+// ticket.uploadUrl is a one-time TUS endpoint — upload the file with a TUS
+// client (e.g. tus-js-client) using `uploadUrl: ticket.uploadUrl`.
 
 const playback = await client.video.videos.mintToken(ticket.video.id, {
   expiresInSeconds: 3600,

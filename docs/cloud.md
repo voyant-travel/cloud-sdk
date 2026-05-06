@@ -87,6 +87,9 @@ const pdf = await client.browser.pdf({
 
 const ticket = await client.video.videos.createUpload({
   name: "intro",
+  fileSize: file.size,
   maxDurationSeconds: 600,
 });
+// ticket.uploadUrl is a one-time TUS endpoint — upload the file with a TUS
+// client (e.g. tus-js-client) using `uploadUrl: ticket.uploadUrl`.
 ```

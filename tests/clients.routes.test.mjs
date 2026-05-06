@@ -166,6 +166,7 @@ test("cloud client composes video routes correctly", async () => {
 
   await client.video.videos.createUpload({
     name: "demo",
+    fileSize: 12345,
     maxDurationSeconds: 600,
     requireSignedUrls: true,
   });
@@ -173,6 +174,7 @@ test("cloud client composes video routes correctly", async () => {
   assert.equal(calls[2].method, "POST");
   assert.deepEqual(JSON.parse(calls[2].body), {
     name: "demo",
+    fileSize: 12345,
     maxDurationSeconds: 600,
     requireSignedUrls: true,
   });
