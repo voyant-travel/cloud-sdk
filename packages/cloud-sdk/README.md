@@ -180,6 +180,8 @@ captions under `videos.captions.{list, upload, generate, delete}`, and
 ```ts
 import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
 
+declare const file: File;
+
 const client = createVoyantCloudClient({
   apiKey: process.env.VOYANT_API_KEY!,
 });
@@ -188,6 +190,7 @@ const ticket = await client.video.videos.createUpload({
   name: "intro",
   fileSize: file.size,
   maxDurationSeconds: 600,
+  tags: ["marketing", "launch"],
 });
 // ticket.uploadUrl is a one-time TUS endpoint — upload the file with a TUS
 // client (e.g. tus-js-client) using `uploadUrl: ticket.uploadUrl`.
