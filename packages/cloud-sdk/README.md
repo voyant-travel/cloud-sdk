@@ -6,7 +6,7 @@ Public TypeScript client for Voyant Cloud APIs.
 
 `@voyantjs/cloud-sdk` is for hosted Voyant Cloud services:
 
-- vault (read secrets)
+- vault (read secrets; per-call and envelope crypto)
 - sms (send messages, list phone numbers and messages)
 - verification (start verification, check codes, list recent attempts)
 - email (list, send, and fetch email messages)
@@ -91,7 +91,30 @@ Root groups:
 - `video`
 - `search` (standalone `createSearchClientConfig` export, not on the client)
 
-The `vault` group covers list-vaults, list-secrets, and get-secret routes.
+The `vault` group covers list-vaults, list-secrets, and get-secret routes,
+plus per-call (`encrypt`/`decrypt`) and envelope (`generateDataKey`/`unwrap`)
+crypto. The per-call pair is right for ad-hoc single-field encryption; the
+envelope pair fits bulk workloads where caching a DEK per row or batch
+avoids one HTTP round-trip per value. `ciphertext` is one opaque base64
+string (`nonce[12] || ciphertext`); `dek`/`wrappedDek` are also base64.
+
+```ts
+import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+
+const client = createVoyantCloudClient({
+  apiKey: process.env.VOYANT_API_KEY!,
+});
+
+// Per-call: one HTTP round-trip per value.
+const { ciphertext } = await client.vault.encrypt("primary", "hello");
+const { plaintext } = await client.vault.decrypt("primary", ciphertext);
+
+// Envelope: fetch a DEK once, encrypt many values locally, persist
+// `wrappedDek` alongside the ciphertexts, and unwrap on read.
+const { dek, wrappedDek } = await client.vault.generateDataKey("primary");
+// ... AES-GCM with `dek`, store `wrappedDek` per row ...
+const recovered = await client.vault.unwrap("primary", wrappedDek);
+```
 
 The `sms` group covers list-phone-numbers, list-messages, and send-message
 routes.
@@ -204,7 +227,9 @@ const playback = await client.video.videos.mintToken(ticket.video.id, {
 
 Useful exported types include:
 
-- `VaultSummary`, `VaultSecretSummary`, `VaultSecretValue`
+- `VaultSummary`, `VaultSecretSummary`, `VaultSecretValue`,
+  `VaultEncryptResult`, `VaultDecryptResult`, `VaultGenerateDataKeyResult`,
+  `VaultUnwrapResult`
 - `PhoneNumberSummary`, `SmsMessageSummary`, `SendSmsInput`
 - `VerificationAttemptSummary`, `VerificationCheckResult`
 - `StartVerificationInput`, `CheckVerificationInput`
@@ -231,7 +256,7 @@ Useful exported types include:
 - default base URL is `https://api.voyantjs.com`
 - request auth defaults to `authorization: Bearer <apiKey>`
 - response envelopes of the form `{ data: ... }` are unwrapped by default
-- API tokens are scoped (`vault:read`, `sms:read`, `sms:send`,
+- API tokens are scoped (`vault:read`, `vault:write`, `sms:read`, `sms:send`,
   `phone-numbers:read`, `verification:start`, `verification:check`,
   `verification:read`, `emails:read`, `emails:send`, `browser:render`,
   `browser:scrape`, `browser:extract`, `browser:crawl`, `browser:sessions`,

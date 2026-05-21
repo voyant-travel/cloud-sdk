@@ -4,7 +4,8 @@
 
 ## Current shape
 
-- `vault` group for listing vaults and reading secrets
+- `vault` group for listing vaults, reading secrets, and per-call /
+  envelope crypto (`encrypt`, `decrypt`, `generateDataKey`, `unwrap`)
 - `sms` group for listing phone numbers, listing messages, and sending messages
 - `verification` group for starting verification attempts, checking codes, and listing recent attempts
 - `email` group for listing, sending, and fetching email messages
@@ -16,7 +17,9 @@
 
 ## Key public types
 
-- vault: `VaultSummary`, `VaultSecretSummary`, `VaultSecretValue`
+- vault: `VaultSummary`, `VaultSecretSummary`, `VaultSecretValue`,
+  `VaultEncryptResult`, `VaultDecryptResult`, `VaultGenerateDataKeyResult`,
+  `VaultUnwrapResult`
 - sms: `PhoneNumberSummary`, `SmsMessageSummary`, `SendSmsInput`,
   `PhoneNumberStatus`, `SmsMessageStatus`
 - verification: `VerificationAttemptSummary`, `VerificationCheckResult`,
@@ -40,7 +43,9 @@
 
 API tokens are scoped. The required scopes per group:
 
-- `vault.*` requires `vault:read`
+- `vault.{listVaults, listSecrets, getSecret, decrypt, unwrap}` require
+  `vault:read`
+- `vault.{encrypt, generateDataKey}` require `vault:write`
 - `sms.listPhoneNumbers` requires `phone-numbers:read`
 - `sms.listMessages` requires `sms:read`
 - `sms.sendMessage` requires `sms:send`

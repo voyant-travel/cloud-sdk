@@ -61,6 +61,27 @@ export interface VaultSecretValue {
   version: number;
 }
 
+export interface VaultEncryptResult {
+  /** Opaque base64 envelope: `nonce[12] || ciphertext`. Pass back as-is to `vault.decrypt`. */
+  ciphertext: string;
+}
+
+export interface VaultDecryptResult {
+  plaintext: string;
+}
+
+export interface VaultGenerateDataKeyResult {
+  /** Raw 32-byte DEK, base64. Use for client-side AES-GCM, then discard. */
+  dek: string;
+  /** KMS-wrapped DEK, base64. Persist alongside ciphertext and send to `vault.unwrap` to recover the DEK. */
+  wrappedDek: string;
+}
+
+export interface VaultUnwrapResult {
+  /** Raw 32-byte DEK, base64. Use for client-side AES-GCM, then discard. */
+  dek: string;
+}
+
 export interface PhoneNumberSummary {
   capabilities: PhoneNumberCapabilities;
   country: string;

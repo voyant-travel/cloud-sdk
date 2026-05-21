@@ -52,6 +52,56 @@ test("cloud client composes vault routes correctly", async () => {
   );
 });
 
+test("cloud client composes vault crypto routes correctly", async () => {
+  const recorder = createRecorder({
+    responseBody: {
+      data: {
+        ciphertext: "AAAA",
+        plaintext: "hello",
+        dek: "AAAA",
+        wrappedDek: "BBBB",
+      },
+    },
+  });
+  const client = createVoyantCloudClient({
+    apiKey: "vault_key",
+    fetch: recorder.fetch,
+  });
+
+  await client.vault.encrypt("primary", "hello");
+  await client.vault.decrypt("primary", "AAAA");
+  await client.vault.generateDataKey("primary");
+  await client.vault.unwrap("primary", "BBBB");
+
+  assert.equal(
+    recorder.calls[0].url,
+    "https://api.voyantjs.com/vault/v1/primary/encrypt",
+  );
+  assert.equal(recorder.calls[0].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[0].body), { plaintext: "hello" });
+
+  assert.equal(
+    recorder.calls[1].url,
+    "https://api.voyantjs.com/vault/v1/primary/decrypt",
+  );
+  assert.equal(recorder.calls[1].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[1].body), { ciphertext: "AAAA" });
+
+  assert.equal(
+    recorder.calls[2].url,
+    "https://api.voyantjs.com/vault/v1/primary/generateDataKey",
+  );
+  assert.equal(recorder.calls[2].method, "POST");
+  assert.equal(recorder.calls[2].body, undefined);
+
+  assert.equal(
+    recorder.calls[3].url,
+    "https://api.voyantjs.com/vault/v1/primary/unwrap",
+  );
+  assert.equal(recorder.calls[3].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[3].body), { wrappedDek: "BBBB" });
+});
+
 test("cloud client composes sms phone-number and message routes correctly", async () => {
   const recorder = createRecorder({
     responseBody: { data: { id: "msg_123", status: "queued" } },
