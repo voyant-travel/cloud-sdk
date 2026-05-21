@@ -29,9 +29,13 @@ import type {
   StartVerificationInput,
   UpdateVideoInput,
   UploadVideoCaptionInput,
+  VaultDecryptResult,
+  VaultEncryptResult,
+  VaultGenerateDataKeyResult,
   VaultSecretSummary,
   VaultSecretValue,
   VaultSummary,
+  VaultUnwrapResult,
   VerificationAttemptSummary,
   VerificationCheckResult,
   VideoCaptionSummary,
@@ -72,6 +76,26 @@ export class VoyantCloudClient {
         `/vault/v1/${vaultSlug}/secrets`,
       ),
     listVaults: () => this.transport.request<VaultSummary[]>("/vault/v1"),
+    encrypt: (vaultSlug: string, plaintext: string) =>
+      this.transport.request<VaultEncryptResult>(
+        `/vault/v1/${vaultSlug}/encrypt`,
+        { body: { plaintext }, method: "POST" },
+      ),
+    decrypt: (vaultSlug: string, ciphertext: string) =>
+      this.transport.request<VaultDecryptResult>(
+        `/vault/v1/${vaultSlug}/decrypt`,
+        { body: { ciphertext }, method: "POST" },
+      ),
+    generateDataKey: (vaultSlug: string) =>
+      this.transport.request<VaultGenerateDataKeyResult>(
+        `/vault/v1/${vaultSlug}/generateDataKey`,
+        { method: "POST" },
+      ),
+    unwrap: (vaultSlug: string, wrappedDek: string) =>
+      this.transport.request<VaultUnwrapResult>(
+        `/vault/v1/${vaultSlug}/unwrap`,
+        { body: { wrappedDek }, method: "POST" },
+      ),
   };
 
   readonly sms = {
