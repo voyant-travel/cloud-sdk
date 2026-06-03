@@ -563,6 +563,8 @@ export interface VideoSignedToken {
   videoId: string;
   token: string;
   expiresAt: number;
+  playbackHlsUrl: string | null;
+  playbackDashUrl: string | null;
 }
 
 export interface CreateVideoUploadInput {

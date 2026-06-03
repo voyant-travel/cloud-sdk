@@ -221,6 +221,8 @@ const ticket = await client.video.videos.createUpload({
 const playback = await client.video.videos.mintToken(ticket.video.id, {
   expiresInSeconds: 3600,
 });
+// For signed videos, hand `playback.playbackHlsUrl` to your HLS player.
+// Public videos can use `ticket.video.playbackHlsUrl` directly.
 ```
 
 ## Key public types

@@ -13,7 +13,7 @@
   scraping and extracting data, running long crawl jobs, and driving
   keep-alive Puppeteer sessions
 - `video` group for managing video uploads, playback, captions, watermarks,
-  and minting signed playback tokens
+  and minting signed playback tokens with playable HLS/DASH URLs
 
 ## Key public types
 
