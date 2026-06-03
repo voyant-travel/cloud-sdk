@@ -1,5 +1,11 @@
 # @voyantjs/cloud-sdk
 
+## 0.8.1
+
+### Patch Changes
+
+- 5543b28: Return ready-to-use signed HLS and DASH playback URLs from `videos.mintToken`.
+
 ## 0.8.0
 
 ### Minor Changes
