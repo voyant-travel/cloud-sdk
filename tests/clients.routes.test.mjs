@@ -196,6 +196,25 @@ test("cloud client composes video routes correctly", async () => {
     if (init?.method === "DELETE") {
       return new Response(null, { status: 204 });
     }
+    if (String(url).endsWith("/token")) {
+      return new Response(
+        JSON.stringify({
+          data: {
+            videoId: "vid_1",
+            token: "signed.jwt.value",
+            expiresAt: 1770000000,
+            playbackHlsUrl:
+              "https://customer-example.cloudflarestream.com/signed.jwt.value/manifest/video.m3u8",
+            playbackDashUrl:
+              "https://customer-example.cloudflarestream.com/signed.jwt.value/manifest/video.mpd",
+          },
+        }),
+        {
+          headers: { "content-type": "application/json" },
+          status: 200,
+        },
+      );
+    }
     return new Response(JSON.stringify({ data: { id: "vid_1" } }), {
       headers: { "content-type": "application/json" },
       status: 200,
@@ -255,12 +274,18 @@ test("cloud client composes video routes correctly", async () => {
   );
   assert.equal(calls[6].method, "POST");
 
-  await client.video.videos.mintToken("vid_1", { expiresInSeconds: 600 });
+  const playback = await client.video.videos.mintToken("vid_1", {
+    expiresInSeconds: 600,
+  });
   assert.equal(
     calls[7].url,
     "https://api.voyantjs.com/video/v1/videos/vid_1/token",
   );
   assert.deepEqual(JSON.parse(calls[7].body), { expiresInSeconds: 600 });
+  assert.equal(
+    playback.playbackHlsUrl,
+    "https://customer-example.cloudflarestream.com/signed.jwt.value/manifest/video.m3u8",
+  );
 
   await client.video.videos.captions.list("vid_1");
   assert.equal(
