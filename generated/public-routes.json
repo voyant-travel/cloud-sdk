@@ -2,6 +2,7 @@
   "cloud": [
     "DELETE /browser/v1/crawl/:id",
     "DELETE /browser/v1/sessions/:id",
+    "DELETE /vault/v1/:vaultSlug/secrets/:key",
     "DELETE /video/v1/videos/:videoId",
     "DELETE /video/v1/videos/:videoId/captions/:language",
     "DELETE /video/v1/watermarks/:watermarkProfileId",
@@ -43,6 +44,7 @@
     "POST /vault/v1/:vaultSlug/decrypt",
     "POST /vault/v1/:vaultSlug/encrypt",
     "POST /vault/v1/:vaultSlug/generateDataKey",
+    "POST /vault/v1/:vaultSlug/secrets/:key",
     "POST /vault/v1/:vaultSlug/unwrap",
     "POST /verify/v1/check",
     "POST /verify/v1/start",

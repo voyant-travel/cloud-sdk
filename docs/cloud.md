@@ -56,7 +56,8 @@ API tokens are scoped. The required scopes per group:
 
 - `vault.{listVaults, listSecrets, getSecret, decrypt, unwrap}` require
   `vault:read`
-- `vault.{encrypt, generateDataKey}` require `vault:write`
+- `vault.{setSecret, deleteSecret, encrypt, generateDataKey}` require
+  `vault:write`
 - `sms.listPhoneNumbers` requires `phone-numbers:read`
 - `sms.listMessages` requires `sms:read`
 - `sms.sendMessage` requires `sms:send`
@@ -79,6 +80,10 @@ API tokens are scoped. The required scopes per group:
 - `video.videos.captions.{upload, generate, delete}` requires
   `video:captions:write`
 - `video.watermarks.{create, delete}` requires `video:watermarks:write`
+- `realtime.{publish, publishBatch}` require `realtime:publish`
+- `realtime.history` and `realtime.presence.get` require `realtime:subscribe`
+- `realtime.tokens.mint` requires `realtime:tokens` (the minted client token
+  itself — not the API key — authenticates `RealtimeChannel` connections)
 
 ## Example
 

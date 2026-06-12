@@ -84,6 +84,16 @@ export class VoyantCloudClient {
       this.transport.request<VaultSecretValue>(
         `/vault/v1/${vaultSlug}/secrets/${key}`,
       ),
+    setSecret: (vaultSlug: string, key: string, value: string) =>
+      this.transport.request<VaultSecretSummary>(
+        `/vault/v1/${vaultSlug}/secrets/${key}`,
+        { body: { value }, method: "POST" },
+      ),
+    deleteSecret: (vaultSlug: string, key: string) =>
+      this.transport.request<null>(`/vault/v1/${vaultSlug}/secrets/${key}`, {
+        method: "DELETE",
+        responseType: "text",
+      }),
     listSecrets: (vaultSlug: string) =>
       this.transport.request<VaultSecretSummary[]>(
         `/vault/v1/${vaultSlug}/secrets`,
