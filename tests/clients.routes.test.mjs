@@ -422,7 +422,11 @@ test("cloud client composes browser crawl routes correctly", async () => {
       return new Response(null, { status: 204 });
     }
     return new Response(
-      JSON.stringify({ id: "bjob_1", status: "running", providerJobId: "cf_1" }),
+      JSON.stringify({
+        id: "bjob_1",
+        status: "running",
+        providerJobId: "cf_1",
+      }),
       {
         headers: { "content-type": "application/json" },
         status: 200,
@@ -447,11 +451,17 @@ test("cloud client composes browser crawl routes correctly", async () => {
   assert.equal(calls[0].method, "POST");
 
   await client.browser.crawls.get("bjob_1");
-  assert.equal(calls[1].url, "https://api.voyantjs.com/browser/v1/crawl/bjob_1");
+  assert.equal(
+    calls[1].url,
+    "https://api.voyantjs.com/browser/v1/crawl/bjob_1",
+  );
   assert.equal(calls[1].method, "GET");
 
   await client.browser.crawls.cancel("bjob_1");
-  assert.equal(calls[2].url, "https://api.voyantjs.com/browser/v1/crawl/bjob_1");
+  assert.equal(
+    calls[2].url,
+    "https://api.voyantjs.com/browser/v1/crawl/bjob_1",
+  );
   assert.equal(calls[2].method, "DELETE");
 });
 
@@ -465,7 +475,10 @@ test("cloud client composes browser session routes correctly", async () => {
   });
 
   await client.browser.sessions.open({ label: "test", keepAliveMs: 60_000 });
-  assert.equal(recorder.calls[0].url, "https://api.voyantjs.com/browser/v1/sessions");
+  assert.equal(
+    recorder.calls[0].url,
+    "https://api.voyantjs.com/browser/v1/sessions",
+  );
   assert.equal(recorder.calls[0].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[0].body), {
     label: "test",
@@ -473,7 +486,10 @@ test("cloud client composes browser session routes correctly", async () => {
   });
 
   await client.browser.sessions.list();
-  assert.equal(recorder.calls[1].url, "https://api.voyantjs.com/browser/v1/sessions");
+  assert.equal(
+    recorder.calls[1].url,
+    "https://api.voyantjs.com/browser/v1/sessions",
+  );
   assert.equal(recorder.calls[1].method, "GET");
 
   await client.browser.sessions.get("bsess_1");
@@ -554,4 +570,84 @@ test("cloud client composes verification start, check, and attempts routes corre
     "https://api.voyantjs.com/verify/v1/attempts",
   );
   assert.equal(recorder.calls[2].method, "GET");
+});
+
+test("cloud client composes realtime routes correctly", async () => {
+  const recorder = createRecorder({
+    responseBody: {
+      data: {
+        id: "rtm_1",
+        channel: "orders:eu",
+        event: "order.updated",
+        data: { orderId: "ord_1" },
+        publishedAt: "2026-06-12T00:00:00.000Z",
+      },
+    },
+  });
+  const client = createVoyantCloudClient({
+    apiKey: "realtime_key",
+    fetch: recorder.fetch,
+  });
+
+  await client.realtime.publish("orders:eu", {
+    event: "order.updated",
+    data: { orderId: "ord_1" },
+  });
+  assert.equal(
+    recorder.calls[0].url,
+    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/messages",
+  );
+  assert.equal(recorder.calls[0].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[0].body), {
+    event: "order.updated",
+    data: { orderId: "ord_1" },
+  });
+
+  await client.realtime.publishBatch({
+    messages: [{ channel: "orders:eu", event: "order.updated" }],
+  });
+  assert.equal(
+    recorder.calls[1].url,
+    "https://api.voyantjs.com/realtime/v1/messages",
+  );
+  assert.equal(recorder.calls[1].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[1].body), {
+    messages: [{ channel: "orders:eu", event: "order.updated" }],
+  });
+
+  await client.realtime.history("orders:eu", { limit: 50, sinceId: "rtm_0" });
+  assert.equal(
+    recorder.calls[2].url,
+    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/messages?limit=50&sinceId=rtm_0",
+  );
+  assert.equal(recorder.calls[2].method, "GET");
+
+  await client.realtime.history("orders:eu");
+  assert.equal(
+    recorder.calls[3].url,
+    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/messages",
+  );
+
+  await client.realtime.presence.get("orders:eu");
+  assert.equal(
+    recorder.calls[4].url,
+    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/presence",
+  );
+  assert.equal(recorder.calls[4].method, "GET");
+
+  await client.realtime.tokens.mint({
+    clientId: "user_42",
+    capabilities: { "orders:*": ["subscribe", "presence"] },
+    ttlSeconds: 600,
+  });
+  assert.equal(
+    recorder.calls[5].url,
+    "https://api.voyantjs.com/realtime/v1/tokens",
+  );
+  assert.equal(recorder.calls[5].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[5].body), {
+    clientId: "user_42",
+    capabilities: { "orders:*": ["subscribe", "presence"] },
+    ttlSeconds: 600,
+  });
 });

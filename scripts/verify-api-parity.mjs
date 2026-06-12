@@ -32,6 +32,10 @@ const browserOperationsFile = path.join(
   voyantCloudRepo,
   "apps/browser-api/src/lib/operation.ts",
 );
+const realtimeAppFile = path.join(
+  voyantCloudRepo,
+  "apps/realtime-api/src/app.ts",
+);
 
 function fileExists(filePath) {
   return fs.existsSync(filePath);
@@ -47,9 +51,7 @@ function extractRoutes(filePath, pathPrefix = "") {
   const source = fs.readFileSync(filePath, "utf8");
   return new Set(
     [
-      ...source.matchAll(
-        /\bapp\.(get|post|patch|delete|put)\(\s*"([^"]+)"/gs,
-      ),
+      ...source.matchAll(/\bapp\.(get|post|patch|delete|put)\(\s*"([^"]+)"/gs),
     ].map(
       ([, method, route]) =>
         `${method.toUpperCase()} ${joinPath(pathPrefix, route)}`,
@@ -129,6 +131,24 @@ const actualCloudRoutes = new Set([
   ...extractBrowserRoutes(browserAppFile, browserOperationsFile, "/browser"),
 ]);
 
-verifyManifest("Cloud", actualCloudRoutes, new Set(manifest.cloud));
+// The realtime surface lives in the voyant-realtime-api worker. Until that
+// worker lands in voyant-cloud, skip parity for /realtime/* only (instead
+// of skipping the whole check) so every other product stays gated.
+let expectedCloudRoutes = new Set(manifest.cloud);
+if (fileExists(realtimeAppFile)) {
+  for (const route of extractRoutes(realtimeAppFile, "/realtime")) {
+    actualCloudRoutes.add(route);
+  }
+  actualCloudRoutes.delete("GET /realtime/health");
+} else {
+  expectedCloudRoutes = new Set(
+    manifest.cloud.filter((route) => !route.includes(" /realtime/")),
+  );
+  console.log(
+    "Skipping /realtime/* parity: apps/realtime-api/src/app.ts not found in voyant-cloud.",
+  );
+}
+
+verifyManifest("Cloud", actualCloudRoutes, expectedCloudRoutes);
 
 console.log("API parity verification passed for Cloud routes.");

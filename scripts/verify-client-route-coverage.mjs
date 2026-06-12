@@ -5,7 +5,19 @@ import ts from "typescript";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const routesFile = path.join(repoRoot, "generated", "public-routes.json");
-const cloudClientFile = path.join(repoRoot, "packages", "cloud-sdk", "src", "client.ts");
+const cloudClientFile = path.join(
+  repoRoot,
+  "packages",
+  "cloud-sdk",
+  "src",
+  "client.ts",
+);
+
+// Public routes consumed by SDK surfaces other than `transport.request`,
+// which the AST extraction below cannot see. `GET /realtime/v1/connect`
+// is the WebSocket endpoint spoken by `RealtimeChannel`
+// (packages/cloud-sdk/src/realtime.ts).
+const NON_TRANSPORT_ROUTES = new Set(["GET /realtime/v1/connect"]);
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -21,14 +33,23 @@ function normalizeRoute(route) {
 }
 
 function resolveStringExpression(expression, sourceFile) {
-  if (ts.isStringLiteral(expression) || ts.isNoSubstitutionTemplateLiteral(expression)) {
+  if (
+    ts.isStringLiteral(expression) ||
+    ts.isNoSubstitutionTemplateLiteral(expression)
+  ) {
     return expression.text;
   }
 
   if (ts.isTemplateExpression(expression)) {
-    return expression.head.text + expression.templateSpans
-      .map((span) => `:${span.expression.getText(sourceFile)}${span.literal.text}`)
-      .join("");
+    return (
+      expression.head.text +
+      expression.templateSpans
+        .map(
+          (span) =>
+            `:${span.expression.getText(sourceFile)}${span.literal.text}`,
+        )
+        .join("")
+    );
   }
 
   return null;
@@ -62,7 +83,13 @@ function resolveRequestMethod(callExpression) {
 
 function extractClientRoutes(filePath) {
   const source = fs.readFileSync(filePath, "utf8");
-  const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
   const routes = new Set();
 
   function visit(node) {
@@ -91,8 +118,12 @@ function verifyProductCoverage(product, clientRoutes, manifestRoutes) {
   const actual = new Set([...clientRoutes].map(normalizeRoute));
   const expected = new Set(manifestRoutes.map(normalizeRoute));
 
-  const missingRoutes = [...expected].filter((route) => !actual.has(route)).sort();
-  const unexpectedRoutes = [...actual].filter((route) => !expected.has(route)).sort();
+  const missingRoutes = [...expected]
+    .filter((route) => !actual.has(route))
+    .sort();
+  const unexpectedRoutes = [...actual]
+    .filter((route) => !expected.has(route))
+    .sort();
 
   assert.equal(
     missingRoutes.length,
@@ -106,12 +137,22 @@ function verifyProductCoverage(product, clientRoutes, manifestRoutes) {
   );
 }
 
-assert.ok(fs.existsSync(routesFile), "generated/public-routes.json is missing.");
-assert.ok(fs.existsSync(cloudClientFile), "packages/cloud-sdk/src/client.ts is missing.");
+assert.ok(
+  fs.existsSync(routesFile),
+  "generated/public-routes.json is missing.",
+);
+assert.ok(
+  fs.existsSync(cloudClientFile),
+  "packages/cloud-sdk/src/client.ts is missing.",
+);
 
 const routesManifest = readJson(routesFile);
 const cloudRoutes = extractClientRoutes(cloudClientFile);
 
-verifyProductCoverage("Cloud", cloudRoutes, routesManifest.cloud);
+verifyProductCoverage(
+  "Cloud",
+  cloudRoutes,
+  routesManifest.cloud.filter((route) => !NON_TRANSPORT_ROUTES.has(route)),
+);
 
 console.log("Client route coverage verification passed.");

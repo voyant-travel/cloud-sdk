@@ -14,6 +14,10 @@
   keep-alive Puppeteer sessions
 - `video` group for managing video uploads, playback, captions, watermarks,
   and minting signed playback tokens with playable HLS/DASH URLs
+- `realtime` group for publishing messages (single and batch), reading
+  channel history and presence, and minting short-lived client tokens
+- `RealtimeChannel` standalone WebSocket subscriber client (token-based
+  auth, auto-reconnect with `sinceId` resume)
 
 ## Key public types
 
@@ -38,6 +42,13 @@
   `GenerateVideoCaptionInput`, `CreateVideoWatermarkInput`,
   `VideoStatus`, `VideoCaptionStatus`, `VideoDownloadStatus`,
   `VideoWatermarkPosition`
+- realtime: `RealtimeMessageSummary`, `RealtimePresenceMember`,
+  `RealtimeTokenSummary`, `PublishRealtimeMessageInput`,
+  `PublishRealtimeBatchInput`, `MintRealtimeTokenInput`,
+  `RealtimeCapability`, `RealtimeChannelOptions`, `RealtimeChannelEventMap`,
+  `RealtimeChannelPresenceEvent`, `RealtimeChannelError`,
+  `RealtimeChannelConnectedEvent`, `RealtimeChannelDisconnectedEvent`,
+  `RealtimePresenceAction`
 
 ## Auth scopes
 
@@ -72,7 +83,7 @@ API tokens are scoped. The required scopes per group:
 ## Example
 
 ```ts
-import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient, RealtimeChannel } from "@voyantjs/cloud-sdk";
 
 declare const file: File;
 
@@ -100,4 +111,16 @@ const ticket = await client.video.videos.createUpload({
 });
 // ticket.uploadUrl is a one-time TUS endpoint — upload the file with a TUS
 // client (e.g. tus-js-client) using `uploadUrl: ticket.uploadUrl`.
+
+await client.realtime.publish("orders:eu", {
+  event: "order.updated",
+  data: { orderId: "ord_1" },
+});
+// Mint a short-lived client token and subscribe over WebSocket.
+const { token } = await client.realtime.tokens.mint({
+  clientId: "user_42",
+  capabilities: { "orders:*": ["subscribe", "presence"] },
+});
+const channel = new RealtimeChannel({ channel: "orders:eu", token });
+channel.on("message", (message) => console.log(message.event, message.data));
 ```

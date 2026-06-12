@@ -37,6 +37,13 @@ const sources = [
     ),
     pathPrefix: "/browser",
   },
+  // The realtime surface is implemented in the voyant-realtime-api worker
+  // (apps/realtime-api/src/app.ts) and the public api gateway forwards
+  // /realtime/v1/* through. The worker is the source of truth.
+  {
+    file: path.join(voyantCloudRepo, "apps/realtime-api/src/app.ts"),
+    pathPrefix: "/realtime",
+  },
 ];
 
 const manifestFile = path.join(repoRoot, "generated", "public-routes.json");
