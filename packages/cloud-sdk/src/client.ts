@@ -16,9 +16,15 @@ import type {
   CreateVideoWatermarkInput,
   EmailMessageSummary,
   GenerateVideoCaptionInput,
+  MintRealtimeTokenInput,
   MintVideoSignedTokenInput,
   OpenBrowserSessionInput,
   PhoneNumberSummary,
+  PublishRealtimeBatchInput,
+  PublishRealtimeMessageInput,
+  RealtimeMessageSummary,
+  RealtimePresenceMember,
+  RealtimeTokenSummary,
   RunBrowserCommandsInput,
   RunBrowserCommandsResult,
   SendEmailInput,
@@ -52,8 +58,15 @@ interface CloudflareBrowserResultEnvelope<T> {
   errors?: Array<{ message: string }>;
 }
 
-function unwrapBrowserResult<T>(envelope: CloudflareBrowserResultEnvelope<T>): T {
-  if (envelope && typeof envelope === "object" && "result" in envelope && envelope.result !== undefined) {
+function unwrapBrowserResult<T>(
+  envelope: CloudflareBrowserResultEnvelope<T>,
+): T {
+  if (
+    envelope &&
+    typeof envelope === "object" &&
+    "result" in envelope &&
+    envelope.result !== undefined
+  ) {
     return envelope.result as T;
   }
   return envelope as unknown as T;
@@ -71,6 +84,16 @@ export class VoyantCloudClient {
       this.transport.request<VaultSecretValue>(
         `/vault/v1/${vaultSlug}/secrets/${key}`,
       ),
+    setSecret: (vaultSlug: string, key: string, value: string) =>
+      this.transport.request<VaultSecretSummary>(
+        `/vault/v1/${vaultSlug}/secrets/${key}`,
+        { body: { value }, method: "POST" },
+      ),
+    deleteSecret: (vaultSlug: string, key: string) =>
+      this.transport.request<null>(`/vault/v1/${vaultSlug}/secrets/${key}`, {
+        method: "DELETE",
+        responseType: "text",
+      }),
     listSecrets: (vaultSlug: string) =>
       this.transport.request<VaultSecretSummary[]>(
         `/vault/v1/${vaultSlug}/secrets`,
@@ -141,8 +164,7 @@ export class VoyantCloudClient {
 
   readonly video = {
     videos: {
-      list: () =>
-        this.transport.request<VideoSummary[]>("/video/v1/videos"),
+      list: () => this.transport.request<VideoSummary[]>("/video/v1/videos"),
       get: (videoId: string) =>
         this.transport.request<VideoSummary>(`/video/v1/videos/${videoId}`),
       createUpload: (input: CreateVideoUploadInput) =>
@@ -170,10 +192,7 @@ export class VoyantCloudClient {
           `/video/v1/videos/${videoId}/downloads`,
           { method: "POST" },
         ),
-      mintToken: (
-        videoId: string,
-        input: MintVideoSignedTokenInput = {},
-      ) =>
+      mintToken: (videoId: string, input: MintVideoSignedTokenInput = {}) =>
         this.transport.request<VideoSignedToken>(
           `/video/v1/videos/${videoId}/token`,
           {
@@ -353,6 +372,43 @@ export class VoyantCloudClient {
             method: "DELETE",
           },
         ),
+    },
+  };
+
+  readonly realtime = {
+    publish: (channel: string, input: PublishRealtimeMessageInput) =>
+      this.transport.request<RealtimeMessageSummary>(
+        `/realtime/v1/channels/${channel}/messages`,
+        {
+          body: input,
+          method: "POST",
+        },
+      ),
+    publishBatch: (input: PublishRealtimeBatchInput) =>
+      this.transport.request<RealtimeMessageSummary[]>(
+        "/realtime/v1/messages",
+        {
+          body: input,
+          method: "POST",
+        },
+      ),
+    history: (channel: string, query?: { limit?: number; sinceId?: string }) =>
+      this.transport.request<RealtimeMessageSummary[]>(
+        `/realtime/v1/channels/${channel}/messages`,
+        { query },
+      ),
+    presence: {
+      get: (channel: string) =>
+        this.transport.request<RealtimePresenceMember[]>(
+          `/realtime/v1/channels/${channel}/presence`,
+        ),
+    },
+    tokens: {
+      mint: (input: MintRealtimeTokenInput) =>
+        this.transport.request<RealtimeTokenSummary>("/realtime/v1/tokens", {
+          body: input,
+          method: "POST",
+        }),
     },
   };
 }

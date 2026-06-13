@@ -630,3 +630,48 @@ export interface CreateVideoWatermarkInput {
   scale?: number;
   position?: VideoWatermarkPosition;
 }
+
+export type RealtimeCapability = "subscribe" | "publish" | "presence";
+
+export interface PublishRealtimeMessageInput {
+  /** Event name delivered to subscribers (e.g. "order.updated"). */
+  event: string;
+  /** JSON-serializable payload delivered as-is to subscribers. */
+  data?: unknown;
+}
+
+export interface PublishRealtimeBatchInput {
+  /** Up to 100 messages per request (server-enforced). */
+  messages: Array<{ channel: string; event: string; data?: unknown }>;
+}
+
+export interface RealtimeMessageSummary {
+  id: string;
+  channel: string;
+  event: string;
+  data: unknown;
+  publishedAt: string;
+}
+
+export interface RealtimePresenceMember {
+  clientId: string;
+  data: unknown;
+  joinedAt: string;
+}
+
+export interface MintRealtimeTokenInput {
+  /** Stable subscriber identity; surfaces as the presence `clientId`. */
+  clientId: string;
+  /**
+   * Capability grants keyed by channel name or trailing-wildcard pattern
+   * (e.g. `"admin:*"`).
+   */
+  capabilities: Record<string, ReadonlyArray<RealtimeCapability>>;
+  /** Token lifetime in seconds. Default 3600, max 86400. */
+  ttlSeconds?: number;
+}
+
+export interface RealtimeTokenSummary {
+  token: string;
+  expiresAt: string;
+}

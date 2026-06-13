@@ -10,6 +10,16 @@ export type {
   SearchClientConfig,
   SearchClientConfigOptions,
 } from "./search.js";
+export { RealtimeChannel } from "./realtime.js";
+export type {
+  RealtimeChannelConnectedEvent,
+  RealtimeChannelDisconnectedEvent,
+  RealtimeChannelError,
+  RealtimeChannelEventMap,
+  RealtimeChannelOptions,
+  RealtimeChannelPresenceEvent,
+  RealtimePresenceAction,
+} from "./realtime.js";
 export type {
   BrowserCommand,
   BrowserCommandResult,
@@ -42,11 +52,18 @@ export type {
   EmailMessageStatus,
   EmailMessageSummary,
   GenerateVideoCaptionInput,
+  MintRealtimeTokenInput,
   MintVideoSignedTokenInput,
   OpenBrowserSessionInput,
   PhoneNumberCapabilities,
   PhoneNumberStatus,
   PhoneNumberSummary,
+  PublishRealtimeBatchInput,
+  PublishRealtimeMessageInput,
+  RealtimeCapability,
+  RealtimeMessageSummary,
+  RealtimePresenceMember,
+  RealtimeTokenSummary,
   RunBrowserCommandsInput,
   RunBrowserCommandsResult,
   SendEmailAttachment,

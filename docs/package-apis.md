@@ -23,6 +23,19 @@ Root groups:
 - `client.email.listMessages()`
 - `client.email.sendMessage(input)`
 - `client.email.getMessage(id)`
+- `client.realtime.publish(channel, input)`
+- `client.realtime.publishBatch(input)`
+- `client.realtime.history(channel, query?)`
+- `client.realtime.presence.get(channel)`
+- `client.realtime.tokens.mint(input)`
+
+Standalone exports:
+
+- `new RealtimeChannel(options)` — WebSocket subscriber for a realtime
+  channel (`on`, `publish`, `enterPresence`, `updatePresence`,
+  `leavePresence`, `close`)
+- `createSearchClientConfig(options)` — Typesense client config for the
+  Voyant search proxy
 
 Selected public types:
 
@@ -44,3 +57,12 @@ Selected public types:
 - `EmailMessageSummary`
 - `EmailMessageStatus`
 - `SendEmailInput`
+- `RealtimeMessageSummary`
+- `RealtimePresenceMember`
+- `RealtimeTokenSummary`
+- `RealtimeCapability`
+- `PublishRealtimeMessageInput`
+- `PublishRealtimeBatchInput`
+- `MintRealtimeTokenInput`
+- `RealtimeChannelOptions`
+- `RealtimeChannelEventMap`

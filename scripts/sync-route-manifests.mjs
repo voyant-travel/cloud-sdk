@@ -37,6 +37,18 @@ const sources = [
     ),
     pathPrefix: "/browser",
   },
+  // The realtime surface is implemented in the voyant-realtime-api worker
+  // (apps/realtime-api/src/app.ts) and the public api gateway forwards
+  // /realtime/v1/* through. The worker is the source of truth.
+  //
+  // Marked optional until that worker lands in voyant-cloud: when the file is
+  // absent we skip /realtime/* (mirroring verify-api-parity.mjs) rather than
+  // blocking the manifest refresh for every other product.
+  {
+    file: path.join(voyantCloudRepo, "apps/realtime-api/src/app.ts"),
+    pathPrefix: "/realtime",
+    optional: true,
+  },
 ];
 
 const manifestFile = path.join(repoRoot, "generated", "public-routes.json");
@@ -83,20 +95,32 @@ function extractBrowserRoutes(file, operationsFile, pathPrefix) {
   return [...baseRoutes, ...renderRoutes];
 }
 
-if (
-  !sources.every(
-    (source) =>
-      fileExists(source.file) &&
-      (!source.operationsFile || fileExists(source.operationsFile)),
-  )
-) {
+function sourceFilesExist(source) {
+  return (
+    fileExists(source.file) &&
+    (!source.operationsFile || fileExists(source.operationsFile))
+  );
+}
+
+const missingRequired = sources.filter(
+  (source) => !source.optional && !sourceFilesExist(source),
+);
+if (missingRequired.length > 0) {
   console.error(
     "Unable to sync route manifests: sibling voyant-cloud route files were not found.",
   );
   process.exit(1);
 }
 
-const cloudRoutes = sources
+const activeSources = sources.filter((source) => {
+  if (sourceFilesExist(source)) return true;
+  console.log(
+    `Skipping ${source.pathPrefix}/* sync: ${path.relative(repoRoot, source.file)} not found in voyant-cloud.`,
+  );
+  return false;
+});
+
+const cloudRoutes = activeSources
   .flatMap((source) => {
     if (source.operationsFile) {
       return extractBrowserRoutes(

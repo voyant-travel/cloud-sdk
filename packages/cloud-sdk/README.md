@@ -14,6 +14,8 @@ Public TypeScript client for Voyant Cloud APIs.
   long-running crawls and keep-alive Puppeteer sessions)
 - video (manage uploads, playback, captions, watermarks, signed playback
   tokens; create videos from a public URL)
+- realtime (publish messages, read history and presence, mint client tokens;
+  `RealtimeChannel` subscribes over WebSocket)
 - search (`createSearchClientConfig` returns a Typesense client config pointed
   at the Voyant search proxy)
 
@@ -89,6 +91,7 @@ Root groups:
 - `email`
 - `browser`
 - `video`
+- `realtime` (plus the standalone `RealtimeChannel` subscriber client)
 - `search` (standalone `createSearchClientConfig` export, not on the client)
 
 The `vault` group covers list-vaults, list-secrets, and get-secret routes,
@@ -144,10 +147,7 @@ const png = await client.browser.screenshot({
 
 const session = await client.browser.sessions.open({ keepAliveMs: 60_000 });
 await client.browser.sessions.runCommands(session.id, {
-  commands: [
-    { op: "goto", url: "https://example.com" },
-    { op: "screenshot" },
-  ],
+  commands: [{ op: "goto", url: "https://example.com" }, { op: "screenshot" }],
 });
 await client.browser.sessions.close(session.id);
 ```
@@ -225,6 +225,44 @@ const playback = await client.video.videos.mintToken(ticket.video.id, {
 // Public videos can use `ticket.video.playbackHlsUrl` directly.
 ```
 
+The `realtime` group covers REST access to the realtime service:
+`publish(channel, input)`, `publishBatch(input)` (up to 100 messages),
+`history(channel, query?)`, `presence.get(channel)`, and
+`tokens.mint(input)`. Subscribing happens over WebSocket via the
+standalone `RealtimeChannel` client, which authenticates with a
+short-lived client token minted server-side — never ship an API key to
+subscribers. `RealtimeChannel` uses the global `WebSocket` (browsers,
+workers, Node 21+; injectable via the `webSocket` option), replays missed
+messages on reconnect via `sinceId`, and rejects sends while disconnected.
+
+```ts
+import { createVoyantCloudClient, RealtimeChannel } from "@voyantjs/cloud-sdk";
+
+const client = createVoyantCloudClient({
+  apiKey: process.env.VOYANT_API_KEY!,
+});
+
+// Server-side: publish over REST and mint a token for the subscriber.
+await client.realtime.publish("orders:eu", {
+  event: "order.updated",
+  data: { orderId: "ord_1" },
+});
+const { token } = await client.realtime.tokens.mint({
+  clientId: "user_42",
+  capabilities: { "orders:*": ["subscribe", "presence"] },
+});
+
+// Client-side: subscribe with the minted token.
+const channel = new RealtimeChannel({ channel: "orders:eu", token });
+const off = channel.on("message", (message) => {
+  console.log(message.event, message.data);
+});
+channel.enterPresence({ name: "Alice" });
+// ...later
+off();
+channel.close();
+```
+
 ## Key public types
 
 Useful exported types include:
@@ -248,6 +286,13 @@ Useful exported types include:
   `GenerateVideoCaptionInput`, `CreateVideoWatermarkInput`,
   `VideoStatus`, `VideoCaptionStatus`, `VideoDownloadStatus`,
   `VideoWatermarkPosition`
+- `RealtimeMessageSummary`, `RealtimePresenceMember`, `RealtimeTokenSummary`,
+  `PublishRealtimeMessageInput`, `PublishRealtimeBatchInput`,
+  `MintRealtimeTokenInput`, `RealtimeCapability`
+- `RealtimeChannelOptions`, `RealtimeChannelEventMap`,
+  `RealtimeChannelPresenceEvent`, `RealtimeChannelError`,
+  `RealtimeChannelConnectedEvent`, `RealtimeChannelDisconnectedEvent`,
+  `RealtimePresenceAction`
 - `SearchClientConfig`, `SearchClientConfigOptions`
 - `PhoneNumberStatus`, `SmsMessageStatus`, `VerificationChannel`,
   `VerificationAttemptStatus`, `EmailMessageStatus`,
