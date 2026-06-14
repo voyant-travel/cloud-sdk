@@ -19,7 +19,7 @@ const sdkCoreVersion = JSON.parse(
 const packages = [
   {
     dir: path.join(repoRoot, "packages", "cloud-sdk"),
-    expectedName: "@voyantjs/cloud-sdk",
+    expectedName: "@voyant-travel/cloud-sdk",
   },
 ];
 
@@ -90,7 +90,7 @@ function verifyInstalledImports(tarballs) {
         "-e",
         `
           import assert from "node:assert/strict";
-          import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+          import { createVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
           const cloud = createVoyantCloudClient({ apiKey: "cloud_key" });
 
@@ -183,7 +183,7 @@ function verifyInstalledTypecheck(tarballs) {
           type VerificationChannel,
           type VerificationCheckResult,
           type VoyantCloudClientOptions,
-        } from "@voyantjs/cloud-sdk";
+        } from "@voyant-travel/cloud-sdk";
 
         const cloud: VoyantCloudClient = createVoyantCloudClient({
           apiKey: "cloud_key",
@@ -291,16 +291,16 @@ try {
     assert.equal(manifest.exports?.["."].import, "./dist/index.js");
     assert.equal(manifest.exports?.["."].types, "./dist/index.d.ts");
 
-    assert.deepEqual(manifest.bundleDependencies, ["@voyant-sdk/sdk-core"]);
-    assert.equal(manifest.dependencies?.["@voyant-sdk/sdk-core"], sdkCoreVersion);
+    assert.deepEqual(manifest.bundleDependencies, ["@voyant-travel/sdk-core"]);
+    assert.equal(manifest.dependencies?.["@voyant-travel/sdk-core"], sdkCoreVersion);
 
     assert.ok(files.includes("package/README.md"));
     assert.ok(files.includes("package/package.json"));
     assert.ok(files.includes("package/dist/index.js"));
     assert.ok(files.includes("package/dist/index.d.ts"));
-    assert.ok(files.includes("package/node_modules/@voyant-sdk/sdk-core/package.json"));
-    assert.ok(files.includes("package/node_modules/@voyant-sdk/sdk-core/dist/index.js"));
-    assert.ok(files.includes("package/node_modules/@voyant-sdk/sdk-core/dist/index.d.ts"));
+    assert.ok(files.includes("package/node_modules/@voyant-travel/sdk-core/package.json"));
+    assert.ok(files.includes("package/node_modules/@voyant-travel/sdk-core/dist/index.js"));
+    assert.ok(files.includes("package/node_modules/@voyant-travel/sdk-core/dist/index.d.ts"));
 
     const hasSrcFiles = files.some((file) => file.startsWith("package/src/"));
     assert.equal(hasSrcFiles, false);

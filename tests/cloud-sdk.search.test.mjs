@@ -13,7 +13,7 @@ test("createSearchClientConfig produces a valid Typesense node config", () => {
   assert.equal(config.apiKey, "voyant-bearer");
   assert.deepEqual(config.nodes, [
     {
-      host: "search.voyantjs.com",
+      host: "search.voyant.travel",
       port: 443,
       protocol: "https",
       path: "/acme/catalog",

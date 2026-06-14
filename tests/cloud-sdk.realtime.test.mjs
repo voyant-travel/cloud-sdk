@@ -78,7 +78,7 @@ test("realtime channel builds the connect URL from the base URL", () => {
   assert.equal(sockets.length, 1);
   const url = new URL(sockets[0].url);
   assert.equal(url.protocol, "wss:");
-  assert.equal(url.host, "api.voyantjs.com");
+  assert.equal(url.host, "api.voyant.travel");
   assert.equal(url.pathname, "/realtime/v1/connect");
   assert.equal(url.searchParams.get("channel"), "orders:eu");
   assert.equal(url.searchParams.get("token"), "rtok_123");

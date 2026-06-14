@@ -1,3 +1,3 @@
-import { config } from "@voyant-sdk/eslint-config/base";
+import { config } from "@voyant-travel/eslint-config/base";
 
 export default config;

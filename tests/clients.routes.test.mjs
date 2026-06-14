@@ -35,7 +35,7 @@ test("cloud client composes vault routes correctly", async () => {
   await client.vault.listSecrets("primary");
   await client.vault.getSecret("primary", "stripe-key");
 
-  assert.equal(recorder.calls[0].url, "https://api.voyantjs.com/vault/v1");
+  assert.equal(recorder.calls[0].url, "https://api.voyant.travel/vault/v1");
   assert.equal(recorder.calls[0].method, "GET");
   assert.equal(
     recorder.calls[0].headers.get("authorization"),
@@ -44,11 +44,11 @@ test("cloud client composes vault routes correctly", async () => {
 
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/vault/v1/primary/secrets",
+    "https://api.voyant.travel/vault/v1/primary/secrets",
   );
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/vault/v1/primary/secrets/stripe-key",
+    "https://api.voyant.travel/vault/v1/primary/secrets/stripe-key",
   );
 });
 
@@ -75,28 +75,28 @@ test("cloud client composes vault crypto routes correctly", async () => {
 
   assert.equal(
     recorder.calls[0].url,
-    "https://api.voyantjs.com/vault/v1/primary/encrypt",
+    "https://api.voyant.travel/vault/v1/primary/encrypt",
   );
   assert.equal(recorder.calls[0].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[0].body), { plaintext: "hello" });
 
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/vault/v1/primary/decrypt",
+    "https://api.voyant.travel/vault/v1/primary/decrypt",
   );
   assert.equal(recorder.calls[1].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[1].body), { ciphertext: "AAAA" });
 
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/vault/v1/primary/generateDataKey",
+    "https://api.voyant.travel/vault/v1/primary/generateDataKey",
   );
   assert.equal(recorder.calls[2].method, "POST");
   assert.equal(recorder.calls[2].body, undefined);
 
   assert.equal(
     recorder.calls[3].url,
-    "https://api.voyantjs.com/vault/v1/primary/unwrap",
+    "https://api.voyant.travel/vault/v1/primary/unwrap",
   );
   assert.equal(recorder.calls[3].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[3].body), { wrappedDek: "BBBB" });
@@ -121,18 +121,18 @@ test("cloud client composes sms phone-number and message routes correctly", asyn
 
   assert.equal(
     recorder.calls[0].url,
-    "https://api.voyantjs.com/sms/v1/phone-numbers",
+    "https://api.voyant.travel/sms/v1/phone-numbers",
   );
   assert.equal(recorder.calls[0].method, "GET");
 
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/sms/v1/messages",
+    "https://api.voyant.travel/sms/v1/messages",
   );
 
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/sms/v1/messages",
+    "https://api.voyant.travel/sms/v1/messages",
   );
   assert.equal(recorder.calls[2].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[2].body), {
@@ -162,13 +162,13 @@ test("cloud client composes email message routes correctly", async () => {
 
   assert.equal(
     recorder.calls[0].url,
-    "https://api.voyantjs.com/email/v1/messages",
+    "https://api.voyant.travel/email/v1/messages",
   );
   assert.equal(recorder.calls[0].method, "GET");
 
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/email/v1/messages",
+    "https://api.voyant.travel/email/v1/messages",
   );
   assert.equal(recorder.calls[1].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[1].body), {
@@ -180,7 +180,7 @@ test("cloud client composes email message routes correctly", async () => {
 
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/email/v1/messages/email_123",
+    "https://api.voyant.travel/email/v1/messages/email_123",
   );
   assert.equal(recorder.calls[2].method, "GET");
 });
@@ -227,11 +227,11 @@ test("cloud client composes video routes correctly", async () => {
   });
 
   await client.video.videos.list();
-  assert.equal(calls[0].url, "https://api.voyantjs.com/video/v1/videos");
+  assert.equal(calls[0].url, "https://api.voyant.travel/video/v1/videos");
   assert.equal(calls[0].method, "GET");
 
   await client.video.videos.get("vid_1");
-  assert.equal(calls[1].url, "https://api.voyantjs.com/video/v1/videos/vid_1");
+  assert.equal(calls[1].url, "https://api.voyant.travel/video/v1/videos/vid_1");
 
   await client.video.videos.createUpload({
     name: "demo",
@@ -240,7 +240,7 @@ test("cloud client composes video routes correctly", async () => {
     requireSignedUrls: true,
     tags: ["marketing", "launch"],
   });
-  assert.equal(calls[2].url, "https://api.voyantjs.com/video/v1/videos/upload");
+  assert.equal(calls[2].url, "https://api.voyant.travel/video/v1/videos/upload");
   assert.equal(calls[2].method, "POST");
   assert.deepEqual(JSON.parse(calls[2].body), {
     name: "demo",
@@ -256,21 +256,21 @@ test("cloud client composes video routes correctly", async () => {
   });
   assert.equal(
     calls[3].url,
-    "https://api.voyantjs.com/video/v1/videos/from-url",
+    "https://api.voyant.travel/video/v1/videos/from-url",
   );
 
   await client.video.videos.update("vid_1", { name: "renamed" });
-  assert.equal(calls[4].url, "https://api.voyantjs.com/video/v1/videos/vid_1");
+  assert.equal(calls[4].url, "https://api.voyant.travel/video/v1/videos/vid_1");
   assert.equal(calls[4].method, "PATCH");
 
   await client.video.videos.delete("vid_1");
-  assert.equal(calls[5].url, "https://api.voyantjs.com/video/v1/videos/vid_1");
+  assert.equal(calls[5].url, "https://api.voyant.travel/video/v1/videos/vid_1");
   assert.equal(calls[5].method, "DELETE");
 
   await client.video.videos.enableDownload("vid_1");
   assert.equal(
     calls[6].url,
-    "https://api.voyantjs.com/video/v1/videos/vid_1/downloads",
+    "https://api.voyant.travel/video/v1/videos/vid_1/downloads",
   );
   assert.equal(calls[6].method, "POST");
 
@@ -279,7 +279,7 @@ test("cloud client composes video routes correctly", async () => {
   });
   assert.equal(
     calls[7].url,
-    "https://api.voyantjs.com/video/v1/videos/vid_1/token",
+    "https://api.voyant.travel/video/v1/videos/vid_1/token",
   );
   assert.deepEqual(JSON.parse(calls[7].body), { expiresInSeconds: 600 });
   assert.equal(
@@ -290,7 +290,7 @@ test("cloud client composes video routes correctly", async () => {
   await client.video.videos.captions.list("vid_1");
   assert.equal(
     calls[8].url,
-    "https://api.voyantjs.com/video/v1/videos/vid_1/captions",
+    "https://api.voyant.travel/video/v1/videos/vid_1/captions",
   );
 
   await client.video.videos.captions.upload("vid_1", {
@@ -299,38 +299,38 @@ test("cloud client composes video routes correctly", async () => {
   });
   assert.equal(
     calls[9].url,
-    "https://api.voyantjs.com/video/v1/videos/vid_1/captions",
+    "https://api.voyant.travel/video/v1/videos/vid_1/captions",
   );
   assert.equal(calls[9].method, "POST");
 
   await client.video.videos.captions.generate("vid_1", { language: "en" });
   assert.equal(
     calls[10].url,
-    "https://api.voyantjs.com/video/v1/videos/vid_1/captions/generate",
+    "https://api.voyant.travel/video/v1/videos/vid_1/captions/generate",
   );
 
   await client.video.videos.captions.delete("vid_1", "en");
   assert.equal(
     calls[11].url,
-    "https://api.voyantjs.com/video/v1/videos/vid_1/captions/en",
+    "https://api.voyant.travel/video/v1/videos/vid_1/captions/en",
   );
   assert.equal(calls[11].method, "DELETE");
 
   await client.video.watermarks.list();
-  assert.equal(calls[12].url, "https://api.voyantjs.com/video/v1/watermarks");
+  assert.equal(calls[12].url, "https://api.voyant.travel/video/v1/watermarks");
 
   await client.video.watermarks.create({
     name: "logo",
     url: "https://example.com/logo.png",
     position: "lowerRight",
   });
-  assert.equal(calls[13].url, "https://api.voyantjs.com/video/v1/watermarks");
+  assert.equal(calls[13].url, "https://api.voyant.travel/video/v1/watermarks");
   assert.equal(calls[13].method, "POST");
 
   await client.video.watermarks.delete("vwp_1");
   assert.equal(
     calls[14].url,
-    "https://api.voyantjs.com/video/v1/watermarks/vwp_1",
+    "https://api.voyant.travel/video/v1/watermarks/vwp_1",
   );
   assert.equal(calls[14].method, "DELETE");
 });
@@ -371,30 +371,30 @@ test("cloud client composes browser render and binary routes correctly", async (
 
   const html = await client.browser.content({ url: "https://example.com" });
   assert.equal(html, "<html></html>");
-  assert.equal(calls[0].url, "https://api.voyantjs.com/browser/v1/content");
+  assert.equal(calls[0].url, "https://api.voyant.travel/browser/v1/content");
   assert.equal(calls[0].method, "POST");
   assert.deepEqual(JSON.parse(calls[0].body), { url: "https://example.com" });
 
   await client.browser.markdown({ url: "https://example.com" });
-  assert.equal(calls[1].url, "https://api.voyantjs.com/browser/v1/markdown");
+  assert.equal(calls[1].url, "https://api.voyant.travel/browser/v1/markdown");
 
   await client.browser.snapshot({ url: "https://example.com" });
-  assert.equal(calls[2].url, "https://api.voyantjs.com/browser/v1/snapshot");
+  assert.equal(calls[2].url, "https://api.voyant.travel/browser/v1/snapshot");
 
   await client.browser.scrape({
     url: "https://example.com",
     elements: [{ selector: "h1" }],
   });
-  assert.equal(calls[3].url, "https://api.voyantjs.com/browser/v1/scrape");
+  assert.equal(calls[3].url, "https://api.voyant.travel/browser/v1/scrape");
 
   await client.browser.links({ url: "https://example.com" });
-  assert.equal(calls[4].url, "https://api.voyantjs.com/browser/v1/links");
+  assert.equal(calls[4].url, "https://api.voyant.travel/browser/v1/links");
 
   await client.browser.json({
     url: "https://example.com",
     prompt: "extract the title",
   });
-  assert.equal(calls[5].url, "https://api.voyantjs.com/browser/v1/json");
+  assert.equal(calls[5].url, "https://api.voyant.travel/browser/v1/json");
 
   const screenshot = await client.browser.screenshot({
     url: "https://example.com",
@@ -402,12 +402,12 @@ test("cloud client composes browser render and binary routes correctly", async (
   assert.ok(screenshot instanceof Uint8Array);
   assert.equal(screenshot.length, 4);
   assert.equal(screenshot[0], 0x89);
-  assert.equal(calls[6].url, "https://api.voyantjs.com/browser/v1/screenshot");
+  assert.equal(calls[6].url, "https://api.voyant.travel/browser/v1/screenshot");
 
   const pdf = await client.browser.pdf({ url: "https://example.com" });
   assert.ok(pdf instanceof Uint8Array);
   assert.equal(pdf[0], 0x25);
-  assert.equal(calls[7].url, "https://api.voyantjs.com/browser/v1/pdf");
+  assert.equal(calls[7].url, "https://api.voyant.travel/browser/v1/pdf");
 });
 
 test("cloud client composes browser crawl routes correctly", async () => {
@@ -447,20 +447,20 @@ test("cloud client composes browser crawl routes correctly", async () => {
     status: "running",
     providerJobId: "cf_1",
   });
-  assert.equal(calls[0].url, "https://api.voyantjs.com/browser/v1/crawl");
+  assert.equal(calls[0].url, "https://api.voyant.travel/browser/v1/crawl");
   assert.equal(calls[0].method, "POST");
 
   await client.browser.crawls.get("bjob_1");
   assert.equal(
     calls[1].url,
-    "https://api.voyantjs.com/browser/v1/crawl/bjob_1",
+    "https://api.voyant.travel/browser/v1/crawl/bjob_1",
   );
   assert.equal(calls[1].method, "GET");
 
   await client.browser.crawls.cancel("bjob_1");
   assert.equal(
     calls[2].url,
-    "https://api.voyantjs.com/browser/v1/crawl/bjob_1",
+    "https://api.voyant.travel/browser/v1/crawl/bjob_1",
   );
   assert.equal(calls[2].method, "DELETE");
 });
@@ -477,7 +477,7 @@ test("cloud client composes browser session routes correctly", async () => {
   await client.browser.sessions.open({ label: "test", keepAliveMs: 60_000 });
   assert.equal(
     recorder.calls[0].url,
-    "https://api.voyantjs.com/browser/v1/sessions",
+    "https://api.voyant.travel/browser/v1/sessions",
   );
   assert.equal(recorder.calls[0].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[0].body), {
@@ -488,14 +488,14 @@ test("cloud client composes browser session routes correctly", async () => {
   await client.browser.sessions.list();
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/browser/v1/sessions",
+    "https://api.voyant.travel/browser/v1/sessions",
   );
   assert.equal(recorder.calls[1].method, "GET");
 
   await client.browser.sessions.get("bsess_1");
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/browser/v1/sessions/bsess_1",
+    "https://api.voyant.travel/browser/v1/sessions/bsess_1",
   );
 
   await client.browser.sessions.runCommands("bsess_1", {
@@ -506,7 +506,7 @@ test("cloud client composes browser session routes correctly", async () => {
   });
   assert.equal(
     recorder.calls[3].url,
-    "https://api.voyantjs.com/browser/v1/sessions/bsess_1/commands",
+    "https://api.voyant.travel/browser/v1/sessions/bsess_1/commands",
   );
   assert.equal(recorder.calls[3].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[3].body), {
@@ -519,7 +519,7 @@ test("cloud client composes browser session routes correctly", async () => {
   await client.browser.sessions.close("bsess_1");
   assert.equal(
     recorder.calls[4].url,
-    "https://api.voyantjs.com/browser/v1/sessions/bsess_1",
+    "https://api.voyant.travel/browser/v1/sessions/bsess_1",
   );
   assert.equal(recorder.calls[4].method, "DELETE");
 });
@@ -546,7 +546,7 @@ test("cloud client composes verification start, check, and attempts routes corre
 
   assert.equal(
     recorder.calls[0].url,
-    "https://api.voyantjs.com/verify/v1/start",
+    "https://api.voyant.travel/verify/v1/start",
   );
   assert.equal(recorder.calls[0].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[0].body), {
@@ -557,7 +557,7 @@ test("cloud client composes verification start, check, and attempts routes corre
 
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/verify/v1/check",
+    "https://api.voyant.travel/verify/v1/check",
   );
   assert.equal(recorder.calls[1].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[1].body), {
@@ -567,7 +567,7 @@ test("cloud client composes verification start, check, and attempts routes corre
 
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/verify/v1/attempts",
+    "https://api.voyant.travel/verify/v1/attempts",
   );
   assert.equal(recorder.calls[2].method, "GET");
 });
@@ -595,7 +595,7 @@ test("cloud client composes realtime routes correctly", async () => {
   });
   assert.equal(
     recorder.calls[0].url,
-    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/messages",
+    "https://api.voyant.travel/realtime/v1/channels/orders:eu/messages",
   );
   assert.equal(recorder.calls[0].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[0].body), {
@@ -608,7 +608,7 @@ test("cloud client composes realtime routes correctly", async () => {
   });
   assert.equal(
     recorder.calls[1].url,
-    "https://api.voyantjs.com/realtime/v1/messages",
+    "https://api.voyant.travel/realtime/v1/messages",
   );
   assert.equal(recorder.calls[1].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[1].body), {
@@ -618,20 +618,20 @@ test("cloud client composes realtime routes correctly", async () => {
   await client.realtime.history("orders:eu", { limit: 50, sinceId: "rtm_0" });
   assert.equal(
     recorder.calls[2].url,
-    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/messages?limit=50&sinceId=rtm_0",
+    "https://api.voyant.travel/realtime/v1/channels/orders:eu/messages?limit=50&sinceId=rtm_0",
   );
   assert.equal(recorder.calls[2].method, "GET");
 
   await client.realtime.history("orders:eu");
   assert.equal(
     recorder.calls[3].url,
-    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/messages",
+    "https://api.voyant.travel/realtime/v1/channels/orders:eu/messages",
   );
 
   await client.realtime.presence.get("orders:eu");
   assert.equal(
     recorder.calls[4].url,
-    "https://api.voyantjs.com/realtime/v1/channels/orders:eu/presence",
+    "https://api.voyant.travel/realtime/v1/channels/orders:eu/presence",
   );
   assert.equal(recorder.calls[4].method, "GET");
 
@@ -642,7 +642,7 @@ test("cloud client composes realtime routes correctly", async () => {
   });
   assert.equal(
     recorder.calls[5].url,
-    "https://api.voyantjs.com/realtime/v1/tokens",
+    "https://api.voyant.travel/realtime/v1/tokens",
   );
   assert.equal(recorder.calls[5].method, "POST");
   assert.deepEqual(JSON.parse(recorder.calls[5].body), {

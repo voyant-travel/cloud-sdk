@@ -51,11 +51,11 @@ function verifyPublicPackage(relativePath, { name, descriptionKeyword }) {
   assertEqual(manifest.files, ["dist"], `${relativePath} files`);
   assertEqual(
     manifest.bundleDependencies,
-    ["@voyant-sdk/sdk-core"],
+    ["@voyant-travel/sdk-core"],
     `${relativePath} bundleDependencies`,
   );
   assert.equal(
-    manifest.dependencies?.["@voyant-sdk/sdk-core"],
+    manifest.dependencies?.["@voyant-travel/sdk-core"],
     "workspace:*",
     `${relativePath} must depend on workspace sdk-core`,
   );
@@ -89,7 +89,7 @@ function verifyPublicPackage(relativePath, { name, descriptionKeyword }) {
 function verifyPrivatePackage(relativePath) {
   const manifest = readJson(relativePath);
 
-  assert.equal(manifest.name, "@voyant-sdk/sdk-core", `${relativePath} has an unexpected package name`);
+  assert.equal(manifest.name, "@voyant-travel/sdk-core", `${relativePath} has an unexpected package name`);
   assert.equal(manifest.private, true, `${relativePath} must stay private`);
   assert.equal(manifest.type, "module", `${relativePath} must stay ESM`);
   assert.equal(manifest.sideEffects, false, `${relativePath} must stay side-effect free`);
@@ -124,7 +124,7 @@ function verifyPrivatePackage(relativePath) {
 
 verifyRootPackage();
 verifyPublicPackage("packages/cloud-sdk/package.json", {
-  name: "@voyantjs/cloud-sdk",
+  name: "@voyant-travel/cloud-sdk",
   descriptionKeyword: "Voyant Cloud",
 });
 verifyPrivatePackage("packages/sdk-core/package.json");

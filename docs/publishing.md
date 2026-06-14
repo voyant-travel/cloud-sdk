@@ -2,13 +2,13 @@
 
 ## Packages intended for publish
 
-- `@voyantjs/cloud-sdk`
+- `@voyant-travel/cloud-sdk`
 
 ## Private workspace packages
 
-- `@voyant-sdk/sdk-core`
-- `@voyant-sdk/eslint-config`
-- `@voyant-sdk/typescript-config`
+- `@voyant-travel/sdk-core`
+- `@voyant-travel/eslint-config`
+- `@voyant-travel/typescript-config`
 
 ## Publish expectations
 

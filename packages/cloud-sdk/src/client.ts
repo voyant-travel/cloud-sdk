@@ -1,4 +1,4 @@
-import { VoyantTransport } from "@voyant-sdk/sdk-core";
+import { VoyantTransport } from "@voyant-travel/sdk-core";
 import type {
   BrowserCrawlSummary,
   BrowserJsonInput,

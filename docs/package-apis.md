@@ -2,7 +2,7 @@
 
 This document is a compact map of the current SDK surface.
 
-## `@voyantjs/cloud-sdk`
+## `@voyant-travel/cloud-sdk`
 
 Root client:
 

@@ -16,7 +16,7 @@ Changes here should not pull in private `voyant-cloud` implementation details.
 
 ## Working rules
 
-- keep `@voyant-sdk/sdk-core` small and transport-focused
+- keep `@voyant-travel/sdk-core` small and transport-focused
 - do not add product-specific business logic to shared packages
 - prefer stable public naming over mirroring internal service naming exactly
 - write Markdown docs in this repo, not a docs app

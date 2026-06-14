@@ -1,10 +1,10 @@
-# `@voyantjs/cloud-sdk`
+# `@voyant-travel/cloud-sdk`
 
 Public TypeScript client for Voyant Cloud APIs.
 
 ## Scope
 
-`@voyantjs/cloud-sdk` is for hosted Voyant Cloud services:
+`@voyant-travel/cloud-sdk` is for hosted Voyant Cloud services:
 
 - vault (read secrets; per-call and envelope crypto)
 - sms (send messages, list phone numbers and messages)
@@ -22,13 +22,13 @@ Public TypeScript client for Voyant Cloud APIs.
 ## Install
 
 ```sh
-pnpm add @voyantjs/cloud-sdk
+pnpm add @voyant-travel/cloud-sdk
 ```
 
 ## Usage
 
 ```ts
-import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
 const client = createVoyantCloudClient({
   apiKey: process.env.VOYANT_API_KEY!,
@@ -46,7 +46,7 @@ object and constructs a client. It throws a typed `VoyantCloudConfigError`
 when the key is missing.
 
 ```ts
-import { getVoyantCloudClient, type VoyantCloudEnv } from "@voyantjs/cloud-sdk";
+import { getVoyantCloudClient, type VoyantCloudEnv } from "@voyant-travel/cloud-sdk";
 
 // Cloudflare Worker
 export default {
@@ -58,7 +58,7 @@ export default {
 ```
 
 ```ts
-import { getVoyantCloudClient } from "@voyantjs/cloud-sdk";
+import { getVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
 // Node
 const cloud = getVoyantCloudClient(process.env);
@@ -69,7 +69,7 @@ const vaults = await cloud.vault.listVaults();
 treated as missing so it can't silently clobber a valid env value:
 
 ```ts
-import { getVoyantCloudClient, type VoyantCloudEnv } from "@voyantjs/cloud-sdk";
+import { getVoyantCloudClient, type VoyantCloudEnv } from "@voyant-travel/cloud-sdk";
 
 declare const env: VoyantCloudEnv;
 declare const tenantKey: string;
@@ -102,7 +102,7 @@ avoids one HTTP round-trip per value. `ciphertext` is one opaque base64
 string (`nonce[12] || ciphertext`); `dek`/`wrappedDek` are also base64.
 
 ```ts
-import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
 const client = createVoyantCloudClient({
   apiKey: process.env.VOYANT_API_KEY!,
@@ -133,7 +133,7 @@ a `Uint8Array`. The `browser.crawls` and `browser.sessions` namespaces manage
 long-running crawl jobs and keep-alive Puppeteer sessions.
 
 ```ts
-import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
 const client = createVoyantCloudClient({
   apiKey: process.env.VOYANT_API_KEY!,
@@ -158,7 +158,7 @@ hands back a config you pass straight to the official `typesense` package:
 
 ```ts
 import { Client } from "typesense";
-import { createSearchClientConfig } from "@voyantjs/cloud-sdk";
+import { createSearchClientConfig } from "@voyant-travel/cloud-sdk";
 
 const search = new Client(
   createSearchClientConfig({
@@ -201,7 +201,7 @@ captions under `videos.captions.{list, upload, generate, delete}`, and
 `watermarks.{list, create, delete}`.
 
 ```ts
-import { createVoyantCloudClient } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
 declare const file: File;
 
@@ -236,7 +236,7 @@ workers, Node 21+; injectable via the `webSocket` option), replays missed
 messages on reconnect via `sinceId`, and rejects sends while disconnected.
 
 ```ts
-import { createVoyantCloudClient, RealtimeChannel } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient, RealtimeChannel } from "@voyant-travel/cloud-sdk";
 
 const client = createVoyantCloudClient({
   apiKey: process.env.VOYANT_API_KEY!,
@@ -300,7 +300,7 @@ Useful exported types include:
 
 ## Notes
 
-- default base URL is `https://api.voyantjs.com`
+- default base URL is `https://api.voyant.travel`
 - request auth defaults to `authorization: Bearer <apiKey>`
 - response envelopes of the form `{ data: ... }` are unwrapped by default
 - API tokens are scoped (`vault:read`, `vault:write`, `sms:read`, `sms:send`,

@@ -1,5 +1,5 @@
 {
-  "name": "@voyant-sdk/sdk-core",
+  "name": "@voyant-travel/sdk-core",
   "version": "0.2.0",
   "private": true,
   "description": "Private shared runtime for Voyant SDK packages.",
@@ -22,8 +22,8 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
-    "@voyant-sdk/eslint-config": "workspace:*",
-    "@voyant-sdk/typescript-config": "workspace:*",
+    "@voyant-travel/eslint-config": "workspace:*",
+    "@voyant-travel/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
     "typescript": "5.9.2"
   },

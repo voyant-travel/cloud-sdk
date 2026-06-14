@@ -26,14 +26,14 @@ importers:
 
   packages/cloud-sdk:
     dependencies:
-      '@voyant-sdk/sdk-core':
+      '@voyant-travel/sdk-core':
         specifier: workspace:*
         version: link:../sdk-core
     devDependencies:
-      '@voyant-sdk/eslint-config':
+      '@voyant-travel/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@voyant-sdk/typescript-config':
+      '@voyant-travel/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       eslint:
@@ -84,10 +84,10 @@ importers:
 
   packages/sdk-core:
     devDependencies:
-      '@voyant-sdk/eslint-config':
+      '@voyant-travel/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@voyant-sdk/typescript-config':
+      '@voyant-travel/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       eslint:

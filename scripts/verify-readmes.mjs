@@ -23,8 +23,8 @@ function verifyRootReadme() {
 
   const required = [
     "# Voyant Cloud SDK",
-    "`@voyantjs/cloud-sdk`",
-    "`@voyant-sdk/sdk-core`",
+    "`@voyant-travel/cloud-sdk`",
+    "`@voyant-travel/sdk-core`",
     "pnpm verify",
     "pnpm release",
     "pnpm sync:contracts",
@@ -55,7 +55,7 @@ function verifyPackageReadme({
     `pnpm add ${packageName}`,
     factoryName,
     envVar,
-    "https://api.voyantjs.com",
+    "https://api.voyant.travel",
     docLink,
   ];
 
@@ -147,13 +147,13 @@ function verifyMarkdownExamplesTypecheck() {
 
   try {
     const nodeModulesDir = path.join(tempDir, "node_modules");
-    const voyantJsDir = path.join(nodeModulesDir, "@voyantjs");
+    const voyantTravelDir = path.join(nodeModulesDir, "@voyant-travel");
 
     mkdirSync(nodeModulesDir, { recursive: true });
-    mkdirSync(voyantJsDir, { recursive: true });
+    mkdirSync(voyantTravelDir, { recursive: true });
     symlinkSync(
       path.join(repoRoot, "packages", "cloud-sdk"),
-      path.join(voyantJsDir, "cloud-sdk"),
+      path.join(voyantTravelDir, "cloud-sdk"),
     );
     // Optional peer deps that show up in README snippets must be reachable
     // for tsc resolution.
@@ -246,7 +246,7 @@ function verifyMarkdownExamplesTypecheck() {
 verifyRootReadme();
 verifyPackageReadme({
   path: "packages/cloud-sdk/README.md",
-  packageName: "@voyantjs/cloud-sdk",
+  packageName: "@voyant-travel/cloud-sdk",
   factoryName: "createVoyantCloudClient",
   docLink: "[../../docs/cloud.md](../../docs/cloud.md)",
   envVar: "VOYANT_API_KEY",

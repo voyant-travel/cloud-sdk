@@ -1,10 +1,10 @@
 # Repo Decisions
 
-`cloud-sdk` exists to publish the public `@voyantjs/cloud-sdk` package.
+`cloud-sdk` exists to publish the public `@voyant-travel/cloud-sdk` package.
 
 ## What belongs here
 
-- the public `@voyantjs/cloud-sdk` package
+- the public `@voyant-travel/cloud-sdk` package
 - shared SDK runtime code consumed by that package
 - package-level tests
 - lightweight Markdown documentation
@@ -21,8 +21,8 @@ generation.
 
 ## Package boundaries
 
-- `@voyantjs/cloud-sdk` is for Voyant Cloud services
-- `@voyant-sdk/sdk-core` is private and should contain only transport-level
+- `@voyant-travel/cloud-sdk` is for Voyant Cloud services
+- `@voyant-travel/sdk-core` is private and should contain only transport-level
   concerns
 
 ## Scope rule

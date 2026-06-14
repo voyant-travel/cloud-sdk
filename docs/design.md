@@ -15,7 +15,7 @@ structure.
 
 Current design:
 
-- `@voyantjs/cloud-sdk` has a root client plus operation-scoped groups
+- `@voyant-travel/cloud-sdk` has a root client plus operation-scoped groups
 - shared request machinery lives in `sdk-core`
 
 ## Why not one client type for everything
