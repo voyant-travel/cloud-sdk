@@ -1,4 +1,4 @@
-# `@voyant-sdk/sdk-core`
+# `@voyant-travel/sdk-core`
 
 Private shared runtime for the public Voyant SDK packages.
 
@@ -12,7 +12,7 @@ This package centralizes:
 - JSON encoding
 - API error handling
 
-It is bundled into `@voyantjs/cloud-sdk` so consumers do not need to install it
+It is bundled into `@voyant-travel/cloud-sdk` so consumers do not need to install it
 directly.
 
 ## Rules

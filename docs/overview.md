@@ -2,17 +2,17 @@
 
 `cloud-sdk` publishes one public TypeScript package:
 
-- `@voyantjs/cloud-sdk`
+- `@voyant-travel/cloud-sdk`
 
 Shared transport and error handling stay in a private internal package so the
 public SDK boundary stays clean.
 
 ## Package boundaries
 
-- `@voyantjs/cloud-sdk` wraps Voyant Cloud APIs (vault, sms, verification, email,
+- `@voyant-travel/cloud-sdk` wraps Voyant Cloud APIs (vault, sms, verification, email,
   browser, video) and exposes a `createSearchClientConfig` helper for the
   Voyant search proxy.
-- `@voyant-sdk/sdk-core` contains shared request plumbing only.
+- `@voyant-travel/sdk-core` contains shared request plumbing only.
 
 ## Search
 

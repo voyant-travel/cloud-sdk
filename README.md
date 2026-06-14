@@ -2,14 +2,14 @@
 
 Public TypeScript SDK for Voyant Cloud APIs.
 
-This repo owns the `@voyantjs/cloud-sdk` package and its supporting contract
+This repo owns the `@voyant-travel/cloud-sdk` package and its supporting contract
 tooling. It does not contain a docs app. For now, repo documentation lives as
 Markdown under [`docs/`](./docs).
 
 ## Packages
 
-- `@voyantjs/cloud-sdk`: client for Voyant Cloud vault, sms, verification, email, browser, video, and realtime APIs
-- `@voyant-sdk/sdk-core`: private shared runtime bundled into the public package
+- `@voyant-travel/cloud-sdk`: client for Voyant Cloud vault, sms, verification, email, browser, video, and realtime APIs
+- `@voyant-travel/sdk-core`: private shared runtime bundled into the public package
 
 ## Workspace layout
 

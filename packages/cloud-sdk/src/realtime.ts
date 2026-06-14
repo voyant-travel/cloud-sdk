@@ -29,7 +29,7 @@
 
 import type { RealtimeMessageSummary } from "./types.js";
 
-const DEFAULT_REALTIME_BASE_URL = "https://api.voyantjs.com";
+const DEFAULT_REALTIME_BASE_URL = "https://api.voyant.travel";
 const RECONNECT_BASE_DELAY_MS = 1_000;
 const RECONNECT_MAX_DELAY_MS = 30_000;
 
@@ -46,7 +46,7 @@ export interface RealtimeChannelOptions {
   token: string;
   /**
    * HTTP(S) API origin; converted to ws(s):// for the connection.
-   * Defaults to `https://api.voyantjs.com`.
+   * Defaults to `https://api.voyant.travel`.
    */
   baseUrl?: string;
   /** Resume point: replay history after this message id on connect. */

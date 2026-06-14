@@ -1,4 +1,4 @@
-# @voyantjs/cloud-sdk
+# @voyant-travel/cloud-sdk
 
 ## 0.9.0
 
@@ -83,7 +83,7 @@ string[]` field, and `CreateVideoUploadInput`, `CreateVideoFromUrlInput`, and
   bag of strings.
 
   ```ts
-  import { getVoyantCloudClient } from "@voyantjs/cloud-sdk";
+  import { getVoyantCloudClient } from "@voyant-travel/cloud-sdk";
 
   // Cloudflare Worker
   export default {
@@ -122,7 +122,7 @@ string[]` field, and `CreateVideoUploadInput`, `CreateVideoFromUrlInput`, and
 
   ```ts
   import { Client } from "typesense";
-  import { createSearchClientConfig } from "@voyantjs/cloud-sdk";
+  import { createSearchClientConfig } from "@voyant-travel/cloud-sdk";
 
   const search = new Client(
     createSearchClientConfig({
@@ -140,7 +140,7 @@ string[]` field, and `CreateVideoUploadInput`, `CreateVideoFromUrlInput`, and
   code.
 
   `typesense` is declared as an optional peer dependency — install it
-  alongside `@voyantjs/cloud-sdk` if you use search.
+  alongside `@voyant-travel/cloud-sdk` if you use search.
 
   Adds the `SearchClientConfig` and `SearchClientConfigOptions` types to
   the public type surface.
@@ -149,7 +149,7 @@ string[]` field, and `CreateVideoUploadInput`, `CreateVideoFromUrlInput`, and
 
 ### Minor Changes
 
-- a86c5de: Add `video` group to `@voyantjs/cloud-sdk`. The new surface covers video
+- a86c5de: Add `video` group to `@voyant-travel/cloud-sdk`. The new surface covers video
   uploads (`videos.createUpload`, `videos.createFromUrl`), playback and
   lifecycle (`videos.list`, `videos.get`, `videos.update`, `videos.delete`,
   `videos.enableDownload`, `videos.mintToken`), captions
@@ -160,20 +160,20 @@ string[]` field, and `CreateVideoUploadInput`, `CreateVideoFromUrlInput`, and
 
 ### Minor Changes
 
-- 1e5b76e: Add `browser` group to `@voyantjs/cloud-sdk`, exposing Cloudflare Browser
+- 1e5b76e: Add `browser` group to `@voyant-travel/cloud-sdk`, exposing Cloudflare Browser
   Rendering through Voyant: `content`, `markdown`, `snapshot`, `scrape`,
   `links`, `json`, `screenshot` and `pdf` render helpers; `browser.crawls.*`
   for long-running crawl jobs; and `browser.sessions.*` for keep-alive
   Puppeteer sessions with a typed command schema.
 
-  `@voyant-sdk/sdk-core` adds a `responseType` option to `VoyantRequestOptions`
+  `@voyant-travel/sdk-core` adds a `responseType` option to `VoyantRequestOptions`
   (`"json" | "text" | "binary"`) so the transport can return raw text or a
   `Uint8Array` for binary endpoints (used by `screenshot`/`pdf`).
 
 ### Patch Changes
 
 - Updated dependencies [1e5b76e]
-  - @voyant-sdk/sdk-core@0.2.0
+  - @voyant-travel/sdk-core@0.2.0
 
 ## 0.2.0
 

@@ -12,7 +12,7 @@
  *
  * ```ts
  * import { Client } from "typesense";
- * import { createSearchClientConfig } from "@voyantjs/cloud-sdk";
+ * import { createSearchClientConfig } from "@voyant-travel/cloud-sdk";
  *
  * const search = new Client(createSearchClientConfig({
  *   apiKey: process.env.VOYANT_API_TOKEN!,
@@ -32,7 +32,7 @@
  * project's scoped key downstream.
  */
 
-const DEFAULT_SEARCH_HOST = "search.voyantjs.com";
+const DEFAULT_SEARCH_HOST = "search.voyant.travel";
 const DEFAULT_SEARCH_PORT = 443;
 const DEFAULT_SEARCH_PROTOCOL = "https";
 
@@ -43,7 +43,7 @@ export interface SearchClientConfigOptions {
   organizationSlug: string;
   /** Search project name — the second path segment in the search URL. */
   projectName: string;
-  /** Override the default `search.voyantjs.com` host (e.g. for local dev). */
+  /** Override the default `search.voyant.travel` host (e.g. for local dev). */
   host?: string;
   /** Override the default port. */
   port?: number;

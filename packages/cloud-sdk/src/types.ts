@@ -1,4 +1,4 @@
-import type { VoyantTransportOptions } from "@voyant-sdk/sdk-core";
+import type { VoyantTransportOptions } from "@voyant-travel/sdk-core";
 
 export type VoyantCloudClientOptions = VoyantTransportOptions;
 

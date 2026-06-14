@@ -34,7 +34,7 @@ test("VoyantTransport serializes auth, query params, and JSON bodies", async () 
   assert.deepEqual(result, { ok: true });
   assert.equal(
     requestUrl,
-    "https://api.voyantjs.com/v1/example?limit=10&markets=ro&markets=us",
+    "https://api.voyant.travel/v1/example?limit=10&markets=ro&markets=us",
   );
   assert.equal(requestInit.method, "POST");
   assert.equal(requestInit.body, JSON.stringify({ hello: "world" }));

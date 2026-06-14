@@ -1,16 +1,16 @@
 {
-  "name": "@voyantjs/cloud-sdk",
+  "name": "@voyant-travel/cloud-sdk",
   "version": "0.9.0",
   "description": "Public TypeScript SDK for Voyant Cloud APIs.",
   "license": "FSL-1.1-Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/voyantjs/cloud-sdk.git",
+    "url": "https://github.com/voyant-travel/cloud-sdk.git",
     "directory": "packages/cloud-sdk"
   },
-  "homepage": "https://github.com/voyantjs/cloud-sdk#readme",
+  "homepage": "https://github.com/voyant-travel/cloud-sdk#readme",
   "bugs": {
-    "url": "https://github.com/voyantjs/cloud-sdk/issues"
+    "url": "https://github.com/voyant-travel/cloud-sdk/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -32,7 +32,7 @@
     "dist"
   ],
   "bundleDependencies": [
-    "@voyant-sdk/sdk-core"
+    "@voyant-travel/sdk-core"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -40,7 +40,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@voyant-sdk/sdk-core": "workspace:*"
+    "@voyant-travel/sdk-core": "workspace:*"
   },
   "peerDependencies": {
     "typesense": ">=2.0.0 <4.0.0"
@@ -51,8 +51,8 @@
     }
   },
   "devDependencies": {
-    "@voyant-sdk/eslint-config": "workspace:*",
-    "@voyant-sdk/typescript-config": "workspace:*",
+    "@voyant-travel/eslint-config": "workspace:*",
+    "@voyant-travel/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
     "typescript": "5.9.2",
     "typesense": "^3.0.6"

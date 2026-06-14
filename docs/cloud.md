@@ -1,6 +1,6 @@
 # Cloud SDK
 
-`@voyantjs/cloud-sdk` is the public TypeScript client for Voyant Cloud APIs.
+`@voyant-travel/cloud-sdk` is the public TypeScript client for Voyant Cloud APIs.
 
 ## Current shape
 
@@ -88,7 +88,7 @@ API tokens are scoped. The required scopes per group:
 ## Example
 
 ```ts
-import { createVoyantCloudClient, RealtimeChannel } from "@voyantjs/cloud-sdk";
+import { createVoyantCloudClient, RealtimeChannel } from "@voyant-travel/cloud-sdk";
 
 declare const file: File;
 
