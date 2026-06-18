@@ -1,5 +1,30 @@
 import { VoyantTransport } from "@voyant-travel/sdk-core";
 import type {
+  CloudApp,
+  CloudAppEnvironment,
+  CloudAppEnvVar,
+  CloudDatabase,
+  CloudDatabaseBranch,
+  CloudDatabaseConnection,
+  CloudDatabaseConnectionQuery,
+  CloudDatabaseRole,
+  CloudDeployment,
+  CloudDeploymentLogsPage,
+  CloudRuntimeLogsPage,
+  CloudStorageBucket,
+  CreateCloudAppEnvironmentInput,
+  CreateCloudAppEnvVarInput,
+  CreateCloudAppInput,
+  CreateCloudDatabaseBranchInput,
+  CreateCloudDatabaseInput,
+  CreateCloudDeploymentInput,
+  CreateCloudStorageBucketInput,
+  ListCloudRuntimeLogsQuery,
+  UpdateCloudAppEnvironmentInput,
+  UpdateCloudAppEnvVarInput,
+  UpdateCloudAppInput,
+} from "./types.js";
+import type {
   BrowserCrawlSummary,
   BrowserJsonInput,
   BrowserLink,
@@ -408,6 +433,234 @@ export class VoyantCloudClient {
         this.transport.request<RealtimeTokenSummary>("/realtime/v1/tokens", {
           body: input,
           method: "POST",
+        }),
+    },
+  };
+
+  /**
+   * Control plane: apps, their environments, env vars, deployments, and
+   * runtime logs. Organization is implicit (from the token).
+   */
+  readonly apps = {
+    list: () => this.transport.request<CloudApp[]>("/cloud/v1/apps"),
+    get: (appSlug: string) =>
+      this.transport.request<CloudApp>(`/cloud/v1/apps/${appSlug}`),
+    create: (input: CreateCloudAppInput) =>
+      this.transport.request<CloudApp>("/cloud/v1/apps", {
+        body: input,
+        method: "POST",
+      }),
+    update: (appSlug: string, input: UpdateCloudAppInput) =>
+      this.transport.request<CloudApp>(`/cloud/v1/apps/${appSlug}`, {
+        body: input,
+        method: "PATCH",
+      }),
+    delete: (appSlug: string) =>
+      this.transport.request<null>(`/cloud/v1/apps/${appSlug}`, {
+        method: "DELETE",
+        responseType: "text",
+      }),
+
+    environments: {
+      list: (appSlug: string) =>
+        this.transport.request<CloudAppEnvironment[]>(
+          `/cloud/v1/apps/${appSlug}/environments`,
+        ),
+      create: (appSlug: string, input: CreateCloudAppEnvironmentInput) =>
+        this.transport.request<CloudAppEnvironment>(
+          `/cloud/v1/apps/${appSlug}/environments`,
+          { body: input, method: "POST" },
+        ),
+      update: (
+        appSlug: string,
+        environmentId: string,
+        input: UpdateCloudAppEnvironmentInput,
+      ) =>
+        this.transport.request<CloudAppEnvironment>(
+          `/cloud/v1/apps/${appSlug}/environments/${environmentId}`,
+          { body: input, method: "PATCH" },
+        ),
+      resolvedConfig: (appSlug: string, environmentId: string) =>
+        this.transport.request<Record<string, unknown>>(
+          `/cloud/v1/apps/${appSlug}/environments/${environmentId}/resolved-config`,
+        ),
+    },
+
+    /** Env var values are always masked in responses. */
+    envVars: {
+      list: (appSlug: string, environmentId: string) =>
+        this.transport.request<CloudAppEnvVar[]>(
+          `/cloud/v1/apps/${appSlug}/environments/${environmentId}/env-vars`,
+        ),
+      create: (
+        appSlug: string,
+        environmentId: string,
+        input: CreateCloudAppEnvVarInput,
+      ) =>
+        this.transport.request<CloudAppEnvVar>(
+          `/cloud/v1/apps/${appSlug}/environments/${environmentId}/env-vars`,
+          { body: input, method: "POST" },
+        ),
+      update: (
+        appSlug: string,
+        environmentId: string,
+        envVarId: string,
+        input: UpdateCloudAppEnvVarInput,
+      ) =>
+        this.transport.request<CloudAppEnvVar>(
+          `/cloud/v1/apps/${appSlug}/environments/${environmentId}/env-vars/${envVarId}`,
+          { body: input, method: "PATCH" },
+        ),
+      delete: (appSlug: string, environmentId: string, envVarId: string) =>
+        this.transport.request<null>(
+          `/cloud/v1/apps/${appSlug}/environments/${environmentId}/env-vars/${envVarId}`,
+          { method: "DELETE", responseType: "text" },
+        ),
+    },
+
+    deployments: {
+      list: (appSlug: string) =>
+        this.transport.request<CloudDeployment[]>(
+          `/cloud/v1/apps/${appSlug}/deployments`,
+        ),
+      get: (appSlug: string, deploymentId: string) =>
+        this.transport.request<CloudDeployment>(
+          `/cloud/v1/apps/${appSlug}/deployments/${deploymentId}`,
+        ),
+      create: (appSlug: string, input: CreateCloudDeploymentInput) =>
+        this.transport.request<CloudDeployment>(
+          `/cloud/v1/apps/${appSlug}/deployments`,
+          { body: input, method: "POST" },
+        ),
+      logs: (appSlug: string, deploymentId: string, cursor?: string) =>
+        this.transport.request<CloudDeploymentLogsPage>(
+          `/cloud/v1/apps/${appSlug}/deployments/${deploymentId}/logs`,
+          cursor ? { query: { cursor } } : undefined,
+        ),
+      cancel: (appSlug: string, deploymentId: string) =>
+        this.transport.request<CloudDeployment>(
+          `/cloud/v1/apps/${appSlug}/deployments/${deploymentId}/cancel`,
+          { method: "POST" },
+        ),
+      rollback: (appSlug: string, deploymentId: string) =>
+        this.transport.request<CloudDeployment>(
+          `/cloud/v1/apps/${appSlug}/deployments/${deploymentId}/rollback`,
+          { method: "POST" },
+        ),
+    },
+
+    runtimeLogs: (appSlug: string, query: ListCloudRuntimeLogsQuery = {}) => {
+      const params: Record<string, string> = {};
+      if (query.environment) params.environment = query.environment;
+      if (query.level) params.level = query.level;
+      if (query.from !== undefined) params.from = String(query.from);
+      if (query.to !== undefined) params.to = String(query.to);
+      if (query.q) params.q = query.q;
+      return this.transport.request<CloudRuntimeLogsPage>(
+        `/cloud/v1/apps/${appSlug}/runtime-logs`,
+        { query: params },
+      );
+    },
+  };
+
+  /** Control plane: managed databases (Neon / D1 / Vectorize). */
+  readonly databases = {
+    list: () => this.transport.request<CloudDatabase[]>("/cloud/v1/databases"),
+    get: (databaseId: string) =>
+      this.transport.request<CloudDatabase>(
+        `/cloud/v1/databases/${databaseId}`,
+      ),
+    create: (input: CreateCloudDatabaseInput) =>
+      this.transport.request<CloudDatabase>("/cloud/v1/databases", {
+        body: input,
+        method: "POST",
+      }),
+    delete: (databaseId: string) =>
+      this.transport.request<null>(`/cloud/v1/databases/${databaseId}`, {
+        method: "DELETE",
+        responseType: "text",
+      }),
+    usage: (databaseId: string) =>
+      this.transport.request<Record<string, unknown>>(
+        `/cloud/v1/databases/${databaseId}/usage`,
+      ),
+    connectionUri: (
+      databaseId: string,
+      query: CloudDatabaseConnectionQuery = {},
+    ) => {
+      const params: Record<string, string> = {};
+      if (query.branchId) params.branchId = query.branchId;
+      if (query.endpointId) params.endpointId = query.endpointId;
+      if (query.databaseName) params.databaseName = query.databaseName;
+      if (query.roleName) params.roleName = query.roleName;
+      if (query.pooled === false) params.pooled = "false";
+      return this.transport.request<CloudDatabaseConnection>(
+        `/cloud/v1/databases/${databaseId}/connection`,
+        { query: params },
+      );
+    },
+
+    branches: {
+      list: (databaseId: string, pooled = true) =>
+        this.transport.request<CloudDatabaseBranch[]>(
+          `/cloud/v1/databases/${databaseId}/branches`,
+          pooled ? undefined : { query: { pooled: "false" } },
+        ),
+      get: (databaseId: string, branchId: string) =>
+        this.transport.request<CloudDatabaseBranch>(
+          `/cloud/v1/databases/${databaseId}/branches/${branchId}`,
+        ),
+      create: (databaseId: string, input: CreateCloudDatabaseBranchInput) =>
+        this.transport.request<CloudDatabaseBranch>(
+          `/cloud/v1/databases/${databaseId}/branches`,
+          { body: input, method: "POST" },
+        ),
+      delete: (databaseId: string, branchId: string) =>
+        this.transport.request<null>(
+          `/cloud/v1/databases/${databaseId}/branches/${branchId}`,
+          { method: "DELETE", responseType: "text" },
+        ),
+    },
+
+    roles: {
+      list: (databaseId: string, branchId: string) =>
+        this.transport.request<CloudDatabaseRole[]>(
+          `/cloud/v1/databases/${databaseId}/branches/${branchId}/roles`,
+        ),
+      create: (databaseId: string, branchId: string, name: string) =>
+        this.transport.request<CloudDatabaseRole>(
+          `/cloud/v1/databases/${databaseId}/branches/${branchId}/roles`,
+          { body: { name }, method: "POST" },
+        ),
+      delete: (databaseId: string, branchId: string, roleName: string) =>
+        this.transport.request<null>(
+          `/cloud/v1/databases/${databaseId}/branches/${branchId}/roles/${roleName}`,
+          { method: "DELETE", responseType: "text" },
+        ),
+      resetPassword: (databaseId: string, branchId: string, roleName: string) =>
+        this.transport.request<CloudDatabaseRole>(
+          `/cloud/v1/databases/${databaseId}/branches/${branchId}/roles/${roleName}/reset-password`,
+          { method: "POST" },
+        ),
+    },
+  };
+
+  /** Control plane: R2 storage buckets. */
+  readonly storage = {
+    buckets: {
+      list: () =>
+        this.transport.request<CloudStorageBucket[]>(
+          "/cloud/v1/storage/buckets",
+        ),
+      create: (input: CreateCloudStorageBucketInput) =>
+        this.transport.request<CloudStorageBucket>(
+          "/cloud/v1/storage/buckets",
+          { body: input, method: "POST" },
+        ),
+      delete: (bucketId: string) =>
+        this.transport.request<null>(`/cloud/v1/storage/buckets/${bucketId}`, {
+          method: "DELETE",
+          responseType: "text",
         }),
     },
   };

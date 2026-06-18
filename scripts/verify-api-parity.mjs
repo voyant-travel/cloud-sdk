@@ -11,6 +11,10 @@ const vaultRoutesFile = path.join(
   voyantCloudRepo,
   "apps/api/src/routes/vault.ts",
 );
+const cloudControlPlaneRoutesFile = path.join(
+  voyantCloudRepo,
+  "apps/api/src/routes/cloud-control-plane.ts",
+);
 const smsRoutesFile = path.join(voyantCloudRepo, "apps/api/src/routes/sms.ts");
 const emailRoutesFile = path.join(
   voyantCloudRepo,
@@ -105,6 +109,7 @@ function verifyManifest(label, actualRoutes, expectedRoutes) {
 const requiredFiles = [
   manifestFile,
   vaultRoutesFile,
+  cloudControlPlaneRoutesFile,
   smsRoutesFile,
   emailRoutesFile,
   verifyRoutesFile,
@@ -124,6 +129,7 @@ const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
 
 const actualCloudRoutes = new Set([
   ...extractRoutes(vaultRoutesFile, "/vault/v1"),
+  ...extractRoutes(cloudControlPlaneRoutesFile, "/cloud/v1"),
   ...extractRoutes(smsRoutesFile, "/sms/v1"),
   ...extractRoutes(emailRoutesFile, "/email/v1"),
   ...extractRoutes(verifyRoutesFile, "/verify/v1"),

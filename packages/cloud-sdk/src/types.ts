@@ -675,3 +675,247 @@ export interface RealtimeTokenSummary {
   token: string;
   expiresAt: string;
 }
+
+// ---------------------------------------------------------------------------
+// Control plane (apps, deployments, databases, storage)
+//
+// Mirrors the API-token routes mounted under `/cloud/v1` (see the platform
+// repo's `routes/cloud-control-plane.ts`). Organization is resolved from the
+// token, so none of these inputs carry an organization id. Returned objects
+// may include more fields than typed here — only the stable, useful ones are
+// declared.
+// ---------------------------------------------------------------------------
+
+export type AppTargetKind = "app" | "connector";
+export type AppStatus =
+  | "pending"
+  | "deploying"
+  | "active"
+  | "failed"
+  | "stopped";
+export type BuildMachineSize = "small" | "medium" | "large";
+export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
+
+export interface CloudApp {
+  id: string;
+  slug: string;
+  displayName: string;
+  targetKind: AppTargetKind;
+  status: AppStatus;
+  customHostname: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCloudAppInput {
+  slug: string;
+  displayName: string;
+  targetKind?: AppTargetKind;
+  template?: string | null;
+  sourcePath?: string | null;
+  packageManager?: PackageManager | null;
+  installCommand?: string | null;
+  buildCommand?: string | null;
+  preDeployCommand?: string | null;
+  buildMachineSize?: BuildMachineSize;
+  autoDeploy?: boolean;
+  skipUnchangedDeployments?: boolean;
+  customHostname?: string | null;
+}
+
+export type UpdateCloudAppInput = Partial<
+  Omit<CreateCloudAppInput, "targetKind">
+> & {
+  status?: AppStatus;
+};
+
+export interface CloudAppEnvironment {
+  id: string;
+  name: string;
+  branch: string | null;
+  autoDeploy: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCloudAppEnvironmentInput {
+  name: string;
+  branch?: string | null;
+  workerName?: string | null;
+  autoDeploy?: boolean;
+  wranglerEnv?: string | null;
+  workflowRuntimeRegion?: "us" | "eu";
+}
+
+export type UpdateCloudAppEnvironmentInput = Partial<
+  Omit<CreateCloudAppEnvironmentInput, "name">
+>;
+
+/** Env var as returned by the API — the `value` is always masked. */
+export interface CloudAppEnvVar {
+  id: string;
+  key: string;
+  value: string;
+  isSecret: boolean;
+  usedAt: "build" | "runtime" | "both";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCloudAppEnvVarInput {
+  key: string;
+  value: string;
+  isSecret?: boolean;
+  usedAt?: "build" | "runtime" | "both";
+}
+
+export type UpdateCloudAppEnvVarInput = Partial<CreateCloudAppEnvVarInput>;
+
+export type DeploymentStatus =
+  | "queued"
+  | "building"
+  | "deploying"
+  | "active"
+  | "failed"
+  | "cancelled";
+
+export interface CloudDeployment {
+  id: string;
+  status: DeploymentStatus;
+  environment: string | null;
+  version: string | null;
+  trigger: string | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface CreateCloudDeploymentInput {
+  /** Target by app-environment id, or by environment name. One is required. */
+  appEnvironmentId?: string | null;
+  environment?: string;
+  version?: string | null;
+}
+
+export interface CloudDeploymentLogsPage {
+  entries: Array<{ timestamp: string; message: string; stream?: string }>;
+  cursor: string | null;
+}
+
+export type CloudRuntimeLogLevel = "info" | "warn" | "error";
+
+export interface CloudRuntimeLogEntry {
+  id: string;
+  timestamp: string;
+  level: CloudRuntimeLogLevel;
+  message: string;
+  outcome?: string;
+  requestId?: string;
+  eventType?: string;
+  statusCode?: number;
+  durationMs?: number;
+  traceId?: string;
+}
+
+export interface CloudRuntimeLogsPage {
+  entries: CloudRuntimeLogEntry[];
+  windowStart: string;
+  windowEnd: string;
+  unavailable: boolean;
+}
+
+export interface ListCloudRuntimeLogsQuery {
+  environment?: string;
+  level?: CloudRuntimeLogLevel;
+  /** Window start — ISO 8601 string or epoch milliseconds. */
+  from?: string | number;
+  /** Window end — ISO 8601 string or epoch milliseconds. */
+  to?: string | number;
+  /** Full-text search across messages. */
+  q?: string;
+}
+
+export type DatabaseKind = "neon" | "d1" | "vectorize";
+
+export interface CloudDatabase {
+  id: string;
+  kind: DatabaseKind;
+  name: string;
+  createdAt: string;
+}
+
+export type CreateCloudDatabaseInput =
+  | { kind: "d1"; name: string; locationHint?: string | null }
+  | {
+      kind: "vectorize";
+      name: string;
+      dimensions: number;
+      metric?: "cosine" | "euclidean" | "dot-product";
+      description?: string | null;
+    }
+  | {
+      kind: "neon";
+      name: string;
+      regionId?: string | null;
+      envVar?: {
+        key: string;
+        environments: string[];
+        appScope?: "all" | "selected";
+        appIds?: string[];
+      } | null;
+    };
+
+export interface CloudDatabaseBranch {
+  id: string;
+  name: string;
+  parentBranchId: string | null;
+  createdAt: string;
+}
+
+export interface CreateCloudDatabaseBranchInput {
+  name: string;
+  parentBranchId?: string | null;
+}
+
+export interface CloudDatabaseRole {
+  name: string;
+  branchId: string;
+}
+
+export interface CloudDatabaseConnection {
+  connectionUrl: string;
+}
+
+export interface CloudDatabaseConnectionQuery {
+  branchId?: string;
+  endpointId?: string;
+  databaseName?: string;
+  roleName?: string;
+  /** Pooled connection by default; pass false for the direct endpoint. */
+  pooled?: boolean;
+}
+
+export interface CloudStorageBucket {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface CreateCloudStorageBucketInput {
+  name: string;
+  locationHint?: string | null;
+  jurisdiction?: "default" | "eu" | "fedramp" | null;
+}
+
+export interface CloudOrganization {
+  id: string;
+  slug: string;
+  name: string;
+}
+
+export interface CloudApiTokenSummary {
+  id: string;
+  name: string;
+  scopes: string[];
+  lastUsedAt: string | null;
+  createdAt: string;
+}

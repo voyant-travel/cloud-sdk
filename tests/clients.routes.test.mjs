@@ -651,3 +651,55 @@ test("cloud client composes realtime routes correctly", async () => {
     ttlSeconds: 600,
   });
 });
+
+test("cloud client composes control-plane routes correctly", async () => {
+  const recorder = createRecorder({ responseBody: { data: [] } });
+  const client = createVoyantCloudClient({
+    apiKey: "cli_key",
+    fetch: recorder.fetch,
+  });
+
+  await client.apps.list();
+  await client.apps.create({ slug: "web", displayName: "Web" });
+  await client.apps.envVars.list("web", "env_1");
+  await client.apps.deployments.create("web", { environment: "production" });
+  await client.apps.runtimeLogs("web", { level: "error", q: "timeout" });
+  await client.databases.list();
+  await client.databases.connectionUri("db_1", { pooled: false });
+  await client.storage.buckets.list();
+
+  assert.equal(recorder.calls[0].url, "https://api.voyant.travel/cloud/v1/apps");
+  assert.equal(recorder.calls[0].method, "GET");
+  assert.equal(recorder.calls[0].headers.get("authorization"), "Bearer cli_key");
+
+  assert.equal(recorder.calls[1].method, "POST");
+  assert.deepEqual(JSON.parse(recorder.calls[1].body), {
+    slug: "web",
+    displayName: "Web",
+  });
+
+  assert.equal(
+    recorder.calls[2].url,
+    "https://api.voyant.travel/cloud/v1/apps/web/environments/env_1/env-vars",
+  );
+  assert.equal(
+    recorder.calls[3].url,
+    "https://api.voyant.travel/cloud/v1/apps/web/deployments",
+  );
+  assert.equal(
+    recorder.calls[4].url,
+    "https://api.voyant.travel/cloud/v1/apps/web/runtime-logs?level=error&q=timeout",
+  );
+  assert.equal(
+    recorder.calls[5].url,
+    "https://api.voyant.travel/cloud/v1/databases",
+  );
+  assert.equal(
+    recorder.calls[6].url,
+    "https://api.voyant.travel/cloud/v1/databases/db_1/connection?pooled=false",
+  );
+  assert.equal(
+    recorder.calls[7].url,
+    "https://api.voyant.travel/cloud/v1/storage/buckets",
+  );
+});
