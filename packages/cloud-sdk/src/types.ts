@@ -789,12 +789,14 @@ export interface CloudDeployment {
   completedAt: string | null;
 }
 
-export interface CreateCloudDeploymentInput {
-  /** Target by app-environment id, or by environment name. One is required. */
-  appEnvironmentId?: string | null;
-  environment?: string;
-  version?: string | null;
-}
+/**
+ * A deployment must target either an app-environment id or an environment name.
+ * Modeled as a union so a caller can't construct a request with no target.
+ */
+export type CreateCloudDeploymentInput = { version?: string | null } & (
+  | { appEnvironmentId: string; environment?: string }
+  | { environment: string; appEnvironmentId?: string | null }
+);
 
 export interface CloudDeploymentLogsPage {
   entries: Array<{ timestamp: string; message: string; stream?: string }>;
