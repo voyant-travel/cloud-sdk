@@ -11,6 +11,16 @@ const sources = [
     pathPrefix: "/vault/v1",
   },
   {
+    // API-token control plane (apps, deployments, runtime logs, databases,
+    // storage). The workflow routes in routes/cloud.ts are not mirrored on the
+    // SDK client, so only the control-plane file is a manifest source.
+    file: path.join(
+      voyantCloudRepo,
+      "apps/api/src/routes/cloud-control-plane.ts",
+    ),
+    pathPrefix: "/cloud/v1",
+  },
+  {
     file: path.join(voyantCloudRepo, "apps/api/src/routes/sms.ts"),
     pathPrefix: "/sms/v1",
   },
