@@ -1,5 +1,17 @@
 # @voyant-travel/cloud-sdk
 
+## 0.10.0
+
+### Minor Changes
+
+- eff8462: Add control-plane namespaces: `client.apps` (with `.environments`, `.envVars`,
+  `.deployments`, and `.runtimeLogs`), `client.databases` (Neon branches, roles,
+  connection strings, usage), and `client.storage.buckets`. These wrap the
+  API-token routes under `/cloud/v1`, with the organization resolved from the
+  token. Decryption is intentionally not exposed here — only the existing
+  `client.vault` methods reach secret values, and CLI-minted tokens lack the
+  `vault:read` scope they require.
+
 ## 0.9.0
 
 ### Minor Changes
