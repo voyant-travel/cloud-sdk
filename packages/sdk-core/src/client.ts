@@ -64,17 +64,44 @@ function getErrorMessage(body: unknown, fallback: string) {
     return body;
   }
 
-  if (
-    body &&
-    typeof body === "object" &&
-    "message" in body &&
-    typeof body.message === "string" &&
-    body.message.length > 0
-  ) {
-    return body.message;
+  if (body && typeof body === "object") {
+    // `message` is used by the Data API envelope; `error` by the Cloud and
+    // Connect APIs (`{ error, code?, requestId? }`). Prefer whichever is present.
+    for (const key of ["message", "error"] as const) {
+      const value = (body as Record<string, unknown>)[key];
+      if (typeof value === "string" && value.length > 0) {
+        return value;
+      }
+    }
   }
 
   return fallback;
+}
+
+function getErrorCode(body: unknown): string | null {
+  if (
+    body &&
+    typeof body === "object" &&
+    "code" in body &&
+    typeof body.code === "string" &&
+    body.code.length > 0
+  ) {
+    return body.code;
+  }
+
+  return null;
+}
+
+function toApiError(parsed: unknown, response: Response): VoyantApiError {
+  return new VoyantApiError(
+    getErrorMessage(parsed, `Request failed with status ${response.status}`),
+    {
+      body: parsed,
+      code: getErrorCode(parsed),
+      requestId: response.headers.get("x-request-id"),
+      status: response.status,
+    },
+  );
 }
 
 export class VoyantTransport {
@@ -136,15 +163,7 @@ export class VoyantTransport {
     if (responseType === "binary") {
       if (!response.ok) {
         const text = await response.text();
-        const parsed = maybeJson(text, response.headers.get("content-type"));
-        throw new VoyantApiError(
-          getErrorMessage(parsed, `Request failed with status ${response.status}`),
-          {
-            body: parsed,
-            requestId: response.headers.get("x-request-id"),
-            status: response.status,
-          },
-        );
+        throw toApiError(maybeJson(text, response.headers.get("content-type")), response);
       }
       const buffer = await response.arrayBuffer();
       return new Uint8Array(buffer) as T;
@@ -154,15 +173,7 @@ export class VoyantTransport {
 
     if (responseType === "text") {
       if (!response.ok) {
-        const parsed = maybeJson(text, response.headers.get("content-type"));
-        throw new VoyantApiError(
-          getErrorMessage(parsed, `Request failed with status ${response.status}`),
-          {
-            body: parsed,
-            requestId: response.headers.get("x-request-id"),
-            status: response.status,
-          },
-        );
+        throw toApiError(maybeJson(text, response.headers.get("content-type")), response);
       }
       return text as T;
     }
@@ -170,14 +181,7 @@ export class VoyantTransport {
     const parsed = maybeJson(text, response.headers.get("content-type"));
 
     if (!response.ok) {
-      throw new VoyantApiError(
-        getErrorMessage(parsed, `Request failed with status ${response.status}`),
-        {
-          body: parsed,
-          requestId: response.headers.get("x-request-id"),
-          status: response.status,
-        },
-      );
+      throw toApiError(parsed, response);
     }
 
     if (options.unwrapData === false) {

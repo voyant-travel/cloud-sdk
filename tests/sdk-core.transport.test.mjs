@@ -175,7 +175,38 @@ test("VoyantTransport throws VoyantApiError for non-2xx responses", async () => 
       assert.equal(error.message, "Nope");
       assert.equal(error.status, 400);
       assert.equal(error.requestId, "req_123");
+      assert.equal(error.code, null);
       assert.deepEqual(error.body, { message: "Nope" });
+      return true;
+    },
+  );
+});
+
+test("VoyantTransport surfaces the Cloud `{ error, code }` envelope", async () => {
+  const transport = new VoyantTransport({
+    apiKey: "test_key",
+    fetch: async () =>
+      new Response(
+        JSON.stringify({ error: "Forbidden", code: "forbidden", requestId: "req_abc" }),
+        {
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req_abc",
+          },
+          status: 403,
+        },
+      ),
+  });
+
+  await assert.rejects(
+    () => transport.request("/cloud/v1/example"),
+    (error) => {
+      assert.ok(error instanceof VoyantApiError);
+      // message now comes from the `error` key, not the (absent) `message` key.
+      assert.equal(error.message, "Forbidden");
+      assert.equal(error.status, 403);
+      assert.equal(error.code, "forbidden");
+      assert.equal(error.requestId, "req_abc");
       return true;
     },
   );

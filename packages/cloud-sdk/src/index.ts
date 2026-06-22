@@ -1,4 +1,6 @@
 export { createVoyantCloudClient, VoyantCloudClient } from "./client.js";
+export { VoyantApiError } from "@voyant-travel/sdk-core";
+export type { CloudErrorCode } from "@voyant-travel/sdk-core";
 export {
   getVoyantCloudClient,
   tryGetVoyantCloudClient,
